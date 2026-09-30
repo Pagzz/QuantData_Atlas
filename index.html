@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Signal Atlas · Richard Pagano</title>
 <meta name="author" content="Richard Pagano">
-<meta name="description" content="Independent systematic research on the S&amp;P 500 and Nasdaq-100: point-in-time methodology, validated signals, options and spreads, and what failed.">
+<meta name="description" content="Short- and longer-term trading research on U.S. index and sector ETFs, expressed through defined-risk option spreads. By Richard Pagano.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -157,14 +157,13 @@
   <div class="kicker"><span><b>Independent research</b></span><span>U.S. index &amp; sector ETFs</span><span>Data 1993&ndash;2026</span><span>Updated 30 Sep 2026</span></div>
   <h1>Signal Atlas</h1>
   <p class="byline">By <b>Richard Pagano</b> &middot; <a href="https://github.com/Pagzz">github.com/Pagzz</a></p>
-  <p class="standfirst">Short- and longer-term trading ideas for U.S. index and sector ETFs, expressed mainly through defined-risk option spreads. Every idea
-  was built on point-in-time data, simulated with its real entry and exit, validated out of sample and on ETFs it was never tuned on, and measured against the
-  same trade taken on random days. The ideas now run in a production alerting service.</p>
+  <p class="standfirst">Short- and longer-term trading ideas for U.S. index and sector ETFs, expressed mainly through defined-risk option spreads. Each idea is a fixed
+  rule, tested on point-in-time data, validated out of sample and compared with the same trade on random days.</p>
   <div class="figures">
-    <div><span class="v">5</span><span class="k">defined-risk option structures, each with a tested exit</span></div>
-    <div><span class="v">18</span><span class="k">short- and longer-term signals running live</span></div>
-    <div><span class="v">14</span><span class="k">index and sector ETFs traded or used for validation</span></div>
-    <div><span class="v">14,000+</span><span class="k">rule variants screened; most were rejected</span></div>
+    <div><span class="v">5</span><span class="k">defined-risk option structures</span></div>
+    <div><span class="v">18</span><span class="k">signals running live</span></div>
+    <div><span class="v">14</span><span class="k">index and sector ETFs tested</span></div>
+    <div><span class="v">14,000+</span><span class="k">rule variants screened</span></div>
   </div>
 </header>
 </div>
@@ -172,8 +171,7 @@
 <nav class="toc" aria-label="Contents"><ol>
   <li><a href="#summary">Summary</a></li><li><a href="#method">Method</a></li><li><a href="#data">Data</a></li><li><a href="#spreads">Spreads</a></li>
   <li><a href="#book">Short-term</a></li><li><a href="#longterm">Longer-term</a></li><li><a href="#options">Options</a></li><li><a href="#robust">Robustness</a></li>
-  <li><a href="#pipeline">Daily signals</a></li><li><a href="#failed">What failed</a></li><li><a href="#changes">Change log</a></li><li><a href="#limits">Limitations</a></li>
-  <li><a href="#appendix">Appendix</a></li>
+  <li><a href="#failed">What failed</a></li><li><a href="#changes">Change log</a></li><li><a href="#limits">Limitations</a></li><li><a href="#appendix">Appendix</a></li>
 </ol></nav>
 
 <div class="wrap">
@@ -181,245 +179,194 @@
 <section id="summary">
   <div class="sec-num">01</div>
   <h2>Summary</h2>
-  <p class="dek">The research asks one question over and over: after a specific, measurable market condition, did the market behave differently from a random
-  day &mdash; and does that hold up outside the data it was found in? The answers are grouped by how risk is taken and by holding period.</p>
   <div class="findings">
-    <div class="finding"><h4>Defined-risk spreads carry most of the risk</h4>
-      <p>Five option structures, each with its maximum loss known at entry. Selling call spreads after overbought closes won 90% of the time from 1993 to 2026.
-      A rich-premium iron condor won 91%. A stop at the spread's midpoint removed every full loss without lowering the return. Every structure beats the same
-      structure opened on every day.</p></div>
-    <div class="finding"><h4>Short-term: selling exhaustion, hours to days</h4>
-      <p>Most short-term signals buy a sharp intraday or daily drop at the point where selling has historically faded. Win rates run 68&ndash;85%. The same rules,
-      unchanged, stayed profitable on 12 other index and sector ETFs (profit factors 1.2&ndash;1.9), with smaller edges than on the S&amp;P 500 and Nasdaq-100.</p></div>
-    <div class="finding"><h4>Longer-term: trends and sector rotation, weeks to months</h4>
-      <p>A sector-ETF rotation model returned +10.2% a year against +7.7% for the S&amp;P 500 ETF from 2000 to 2024, with a shallower drawdown (&minus;36% against
-      &minus;55%). A 40-day breakout captures multi-week index trends: it wins 39% of the time, but winners average about 3&times; the losers.</p></div>
-    <div class="finding"><h4>Knowing where an edge stops</h4>
-      <p>The breakout beat random entries on the S&amp;P 500 and Nasdaq-100 ETFs in every era since 1993, but not on sector ETFs or single stocks. It is traded only
-      where it works. Short-term dip-buying, by contrast, carried across sector ETFs.</p></div>
-    <div class="finding"><h4>Most ideas fail, and the failures are recorded</h4>
-      <p>Key price levels, calendar effects, momentum rotation, overnight momentum and several intraday patterns were tested and rejected. Section 10 lists them
-      with the reason each failed.</p></div>
+    <div class="finding"><h4>Spreads carry most of the risk</h4>
+      <p>Five option structures with the maximum loss known at entry. The overbought call spread won 90% of the time over 33 years; the rich-premium iron condor
+      won 91%. Each beats the same structure opened on every day.</p></div>
+    <div class="finding"><h4>Short-term: hours to days</h4>
+      <p>Buying sharp drops where selling has historically run out. Win rates of 68&ndash;85% on SPY and QQQ; the same rules stayed profitable on the other
+      12 ETFs, with smaller edges.</p></div>
+    <div class="finding"><h4>Longer-term: weeks to months</h4>
+      <p>A 40-day index breakout that wins 39% of the time but whose winners are 3&times; its losers, and sector-ETF rotation that returned +10.2% a year against +7.7%
+      for the S&amp;P 500 ETF.</p></div>
+    <div class="finding"><h4>Most ideas fail</h4>
+      <p>Key price levels, calendar effects, momentum rotation and many intraday patterns were rejected. Section 09 lists them.</p></div>
   </div>
 </section>
 
 <section id="method">
   <div class="sec-num">02</div>
-  <h2>Method: the validation ladder</h2>
-  <p class="dek">A signal goes live only after it clears every step. Most candidates fail at step 4 or 5.</p>
+  <h2>Method</h2>
+  <p class="dek">A signal goes live only after passing all six checks. Most candidates fail at step 4 or 5.</p>
   <ol class="ladder">
-    <li><div><b>Point-in-time data</b><span>Signals use completed bars only. Volatility filters use the prior day's VIX. Signals decided "at the close" are
-      computed at 3:45 pm and checked against the real close: the estimate agreed 85&ndash;92% of the time and traded as well.</span></div></li>
-    <li><div><b>The real exit, with costs</b><span>Each trade is simulated with the exit rule the live alert uses (trailing stop, return to the average, stop-loss,
-      time limit), not a fixed holding period. Costs are 3 bp per round trip for ETFs, 5 bp for stocks and $0.01 per option leg.</span></div></li>
-    <li><div><b>Split-sample stability</b><span>Results must be positive in both halves of the test window. Daily rules are found on 1993&ndash;2009 and then
-      must hold on 2010&ndash;2026 unchanged.</span></div></li>
-    <li><div><b>Markets it never saw</b><span>The same rule, with no re-tuning, is run on 12 other ETFs: nine of the S&amp;P 500 Select Sector SPDRs (GICS sector
-      funds), plus the Dow, Russell 2000 and semiconductor ETFs. Daily rules are also run on the 100 largest U.S. stocks.</span></div></li>
-    <li><div><b>Beat a naive baseline</b><span>Each signal must beat random entry days with the same exit, or the same option spread opened every day. The
-      baseline removes the market's upward drift and the premium options normally carry.</span></div></li>
-    <li><div><b>A plateau, not a spike</b><span>Nearby settings and nearby bar sizes (5-minute to 4-hour) must also work. An edge that only appears at one exact
-      setting is treated as noise.</span></div></li>
+    <li><div><b>Point-in-time data</b><span>Completed bars only; volatility filters use the prior day's VIX.</span></div></li>
+    <li><div><b>The real exit, with costs</b><span>Trades use the live exit rule, not a fixed holding period. Costs: 3 bp per ETF round trip, $0.01 per option leg.</span></div></li>
+    <li><div><b>Both halves</b><span>Profitable in each half of the test period. Daily rules are found on 1993&ndash;2009 and must hold on 2010&ndash;2026.</span></div></li>
+    <li><div><b>Unseen markets</b><span>Unchanged on 12 other ETFs (nine S&amp;P 500 Select Sector SPDRs, plus the Dow, Russell 2000 and semiconductors) and, for daily rules, the 100 largest U.S. stocks.</span></div></li>
+    <li><div><b>Beat a baseline</b><span>Better than random entry days with the same exit, or the same spread opened every day.</span></div></li>
+    <li><div><b>A plateau, not a spike</b><span>Nearby settings and bar sizes must also work.</span></div></li>
   </ol>
-  <p class="note">Option returns come from a Black-Scholes model. Implied volatility is the prior day's VIX (SPY) or VXN (QQQ), with a standard
-  index skew. Same-day options are calibrated so that buying an at-the-money straddle every day roughly breaks even, as it does in practice. These
-  are modeled prices, not broker fills.</p>
+  <p class="note">Options are priced with Black-Scholes, using the prior day's VIX (SPY) or VXN (QQQ) and a standard index skew. Modeled prices, not broker fills.</p>
 </section>
 
 <section id="data">
   <div class="sec-num">03</div>
   <h2>Data &amp; engineering</h2>
-  <p class="dek">Where every number comes from, the conventions that keep it point-in-time, and the system that runs the signals live.</p>
   <div class="table-scroll"><table>
     <thead><tr><th>Dataset</th><th>Coverage</th><th>Source</th><th>Used for</th></tr></thead>
     <tbody>
-      <tr><td class="nm">Daily OHLCV, SPY &amp; QQQ</td><td>1993&ndash; / 1999&ndash;</td><td>Yahoo Finance</td><td>Daily signals, long-history tests</td></tr>
-      <tr><td class="nm">Daily OHLCV, 12 sector &amp; index ETFs</td><td>1998&ndash;</td><td>Yahoo Finance</td><td>Out-of-universe validation</td></tr>
-      <tr><td class="nm">Daily OHLCV, 100 largest U.S. stocks</td><td>2000&ndash;</td><td>Yahoo Finance</td><td>Constituent validation, market breadth</td></tr>
-      <tr><td class="nm">Intraday bars (1- to 60-minute)</td><td>2016&ndash;</td><td>Alpaca (consolidated tape)</td><td>Intraday signals, stop tests, 3:45 pm estimates</td></tr>
-      <tr><td class="nm">Real-time 15-minute bars</td><td>live</td><td>Charles Schwab API</td><td>Production signals</td></tr>
-      <tr><td class="nm">VIX &amp; VXN closes</td><td>1990&ndash; / 2001&ndash;</td><td>FRED (Cboe indexes)</td><td>Volatility regimes, option pricing</td></tr>
+      <tr><td class="nm">Daily bars, SPY &amp; QQQ</td><td>1993&ndash; / 1999&ndash;</td><td>Yahoo Finance</td><td>Daily signals, long history</td></tr>
+      <tr><td class="nm">Daily bars, 12 sector &amp; index ETFs</td><td>1998&ndash;</td><td>Yahoo Finance</td><td>Validation</td></tr>
+      <tr><td class="nm">Daily bars, 100 largest U.S. stocks</td><td>2000&ndash;</td><td>Yahoo Finance</td><td>Validation, market breadth</td></tr>
+      <tr><td class="nm">Intraday bars, 1&ndash;60 minute</td><td>2016&ndash;</td><td>Alpaca</td><td>Intraday signals, stop tests</td></tr>
+      <tr><td class="nm">Real-time 15-minute bars</td><td>live</td><td>Charles Schwab API</td><td>Production</td></tr>
+      <tr><td class="nm">VIX &amp; VXN</td><td>1990&ndash; / 2001&ndash;</td><td>FRED (Cboe)</td><td>Volatility regimes, option pricing</td></tr>
     </tbody>
   </table></div>
-  <h3>Point-in-time conventions</h3>
+  <h3>Conventions</h3>
   <ul class="plain">
-    <li><b>Completed bars only.</b> A signal on a bar is evaluated after the bar closes. Higher-timeframe context comes from the last bar <i>completed</i> by that moment.</li>
-    <li><b>Lagged volatility.</b> Volatility filters and option prices use the prior day's VIX or VXN close.</li>
-    <li><b>Wall-clock bar construction.</b> Multi-hour bars are cut on the exchange clock. This fixed a daylight-saving drift that had shifted 4-hour bars by an hour.</li>
-    <li><b>Close-based signals estimated at 3:45 pm.</b> The live system decides at 3:45 pm. The estimate was checked against the real close: it matched 85&ndash;92% of
-      signals and produced the same results.</li>
-    <li><b>Price adjustments.</b> Split- and dividend-adjusted history is used for research returns. Live rules that compare today's price with past levels,
-      such as a 40-day high, use unadjusted prices, because a dividend-adjusted high sits below the price actually traded. When two vendors adjusted the same
-      history differently, signals were rebuilt from a single source rather than mixed.</li>
-    <li><b>Vendor reconciliation.</b> Real-time Schwab bars report 15&ndash;25% less volume than the consolidated-tape history. Live volume is rescaled on the
-      overlapping bars, so volume-based rules keep the meaning they were tested with.</li>
-    <li><b>Known biases stated.</b> The stock universe is today's 100 largest companies (survivorship). It is used only as a pass/fail check, never to tune a rule.</li>
+    <li><b>Close decisions at 3:45 pm.</b> Signals that need the close use the 3:45 pm price; this matched the real close on 85&ndash;92% of signals.</li>
+    <li><b>Exchange-clock bars.</b> Multi-hour bars are cut on the exchange clock, after a daylight-saving drift was found and fixed.</li>
+    <li><b>Price adjustments.</b> Adjusted prices for returns; unadjusted prices for live comparisons with past highs, since a dividend-adjusted high sits below the traded price.</li>
+    <li><b>Vendor reconciliation.</b> Schwab reports 15&ndash;25% less volume than the consolidated tape, so live volume is rescaled on overlapping bars.</li>
+    <li><b>Known bias.</b> The stock universe is today's 100 largest companies (survivorship), so stocks are used only as a pass/fail check.</li>
   </ul>
-  <h3>Production system</h3>
-  <p>The signals run as a Python service: FastAPI, pandas and NumPy, deployed on Render. A scheduler fires each timeframe on the bar clock, merges Schwab real-time
-  bars into Alpaca history, keeps position state on persistent storage, removes duplicate alerts, and posts entries and exits to subscribers. Before any signal goes
-  live, its production code is replayed over years of history and must reproduce the research results: the latest additions matched 90% of research signals,
-  with the same win rates. Monitoring uses the service's health endpoint and its logs.</p>
+  <h3>Production</h3>
+  <p>A Python service (FastAPI, pandas, NumPy) on Render runs each signal on its bar clock, merges real-time and historical data, tracks open positions and posts
+  entries and exits. Before launch, each signal's production code is replayed over history and must reproduce the research results.</p>
 </section>
 
 <section id="spreads">
   <div class="sec-num">04</div>
   <h2>Defined-risk spreads</h2>
-  <p class="dek">The main way these ideas take risk. Each structure has a capped loss, a fixed horizon and a tested exit. Each is measured against the same structure
-  opened on every day, so the result shows what the signal adds beyond the premium options normally carry. Returns are a percentage of the capital at risk.</p>
-  <div class="callout"><p><b>Why spreads.</b> The maximum loss is known before the trade, so positions are sized by risk rather than by price. Index options usually price
-  in more movement than the market delivers, so a spread sold on an ordinary day already earns a small premium in the model. The signals below decide <i>when</i>
-  that premium is richest, and <i>which side</i> to sell.</p></div>
+  <p class="dek">The maximum loss is known before the trade, so positions are sized by risk. Index options usually price in more movement than occurs, so selling
+  them has a small built-in edge; the signals decide when that premium is richest. Returns are a percentage of capital at risk.</p>
   <div class="table-scroll"><table>
-    <thead><tr><th>Structure</th><th>Horizon</th><th>Per year</th><th>Win rate</th><th>Per trade (of risk)</th><th>Profit factor</th><th>Full losses</th><th>Every-day version</th><th>Record</th></tr></thead>
+    <thead><tr><th>Structure</th><th>Horizon</th><th>Per year</th><th>Win rate</th><th>Per trade</th><th>Profit factor</th><th>Full losses</th><th>Every day</th><th>Record</th></tr></thead>
     <tbody>
-      <tr class="grp"><td colspan="9">Premium selling &middot; credit spreads</td></tr>
-      <tr><td><span class="nm">Overbought call spread</span><span class="what">After a short-term overbought close: sell a next-day call 1% above, buy the call 1% further. Midpoint stop.</span></td>
-          <td>1 day</td><td>41</td><td class="pos">90%</td><td class="pos">+6.3%</td><td class="pos">2.6</td><td>1.9% &rarr; 0% with stop</td><td>+2.0%</td><td>1993&ndash;2026, 30 of 34 yrs</td></tr>
-      <tr><td><span class="nm">Overbought call spread, 2-day</span><span class="what">Same strikes, two-day expiry: more premium, more time at risk.</span></td>
-          <td>2 days</td><td>39</td><td class="pos">85%</td><td class="pos">+10.2%</td><td class="pos">2.5</td><td>3.3% &rarr; 0% with stop</td><td>+2.8%</td><td>1993&ndash;2026, 32 of 34 yrs</td></tr>
-      <tr><td><span class="nm">Bear-market rally call spread</span><span class="what">The overbought spread while the index is below its 200-day average.</span></td>
-          <td>2 days</td><td>6</td><td class="pos">83%</td><td class="pos">+19.1%</td><td class="pos">3.2</td><td>5.3%</td><td class="neg">&minus;2.9%</td><td>1993&ndash;2026, both halves</td></tr>
-      <tr><td><span class="nm">Fear-rally call spread</span><span class="what">A rally while volatility is also rising: sell a 5-day call 2% above, buy 3% above.</span></td>
-          <td>5 days</td><td>9</td><td class="pos">91%</td><td class="pos">+12.5%</td><td class="pos">2.9</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td><td>2016&ndash;2026, 10 of 11 yrs</td></tr>
-      <tr><td><span class="nm">Rich-premium iron condor</span><span class="what">Options pricing at least 1.6&times; the recent movement: sell a 5-day call 3% above and put 3% below, 1% wings. Short-strike stop; minimum credit.</span></td>
-          <td>5 days</td><td>18</td><td class="pos">91%</td><td class="pos">+10.6%</td><td class="pos">2.6</td><td>4.5% &rarr; 0% with stop</td><td>+6.6%</td><td>1993&ndash;2026, 88% of yrs</td></tr>
-      <tr class="grp"><td colspan="9">Directional &middot; debit spread</td></tr>
-      <tr><td><span class="nm">Bull call debit spread after a washout</span><span class="what">With the Daily Bounce signal: buy the at-the-money call, sell the call 2% above, 5-day expiry, close at the first up day.</span></td>
-          <td>1&ndash;5 days</td><td>14</td><td class="pos">70%</td><td class="pos">+9.7%</td><td class="pos">1.8</td><td>4.3%</td><td class="neg">&minus;5.8%</td><td>1993&ndash;2026, 82% of yrs</td></tr>
+      <tr class="grp"><td colspan="9">Credit spreads</td></tr>
+      <tr><td><span class="nm">Overbought call spread</span><span class="what">After an overbought close: sell a call 1% above, buy one 1% further.</span></td>
+          <td>1 day</td><td>41</td><td class="pos">90%</td><td class="pos">+6.3%</td><td class="pos">2.6</td><td>1.9% &rarr; 0%*</td><td>+2.0%</td><td>1993&ndash;2026</td></tr>
+      <tr><td><span class="nm">Overbought call spread, 2-day</span><span class="what">Same strikes, two-day expiry.</span></td>
+          <td>2 days</td><td>39</td><td class="pos">85%</td><td class="pos">+10.2%</td><td class="pos">2.5</td><td>3.3% &rarr; 0%*</td><td>+2.8%</td><td>1993&ndash;2026</td></tr>
+      <tr><td><span class="nm">Bear-market rally</span><span class="what">The overbought spread below the 200-day average.</span></td>
+          <td>2 days</td><td>6</td><td class="pos">83%</td><td class="pos">+19.1%</td><td class="pos">3.2</td><td>5.3%</td><td class="neg">&minus;2.9%</td><td>1993&ndash;2026</td></tr>
+      <tr><td><span class="nm">Fear-rally call spread</span><span class="what">A rally while volatility rises: sell a call 2% above, buy 3% above.</span></td>
+          <td>5 days</td><td>9</td><td class="pos">91%</td><td class="pos">+12.5%</td><td class="pos">2.9</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td><td>2016&ndash;2026</td></tr>
+      <tr><td><span class="nm">Rich-premium iron condor</span><span class="what">Options priced at 1.6&times;+ recent movement: short strikes &plusmn;3%, 1% wings.</span></td>
+          <td>5 days</td><td>18</td><td class="pos">91%</td><td class="pos">+10.6%</td><td class="pos">2.6</td><td>4.5% &rarr; 0%*</td><td>+6.6%</td><td>1993&ndash;2026</td></tr>
+      <tr class="grp"><td colspan="9">Debit spread</td></tr>
+      <tr><td><span class="nm">Bull call spread after a washout</span><span class="what">Buy the at-the-money call, sell one 2% above; close on the first up day.</span></td>
+          <td>1&ndash;5 days</td><td>14</td><td class="pos">70%</td><td class="pos">+9.7%</td><td class="pos">1.8</td><td>4.3%</td><td class="neg">&minus;5.8%</td><td>1993&ndash;2026</td></tr>
     </tbody>
   </table></div>
-  <p class="note">"Full losses" = trades losing 90% or more of the capital at risk. "Every-day version" = the same structure opened at every close, same rules otherwise.
-  The spread that tells you most is the bear-market rally: sold on any day below the 200-day average it lost money, but after an overbought close it earned +19% per trade.</p>
+  <p class="note">Full losses = trades losing 90%+ of risk; * with the stops below. Every day = the same structure opened at every close. The bear-market rally shows
+  the signal's value most clearly: sold on ordinary days it lost money, after an overbought close it earned +19% a trade.</p>
 
-  <h3>33 years of the overbought call spread</h3>
-  <div class="chart-grid">
-    <figure class="chart"><figcaption><b>Overbought call spread</b> &middot; cumulative return on risk (1.0 = one spread's max loss)</figcaption>
+  <div class="chart-grid" style="margin-top:18px">
+    <figure class="chart"><figcaption><b>Overbought call spread, 1993&ndash;2026</b> &middot; cumulative return on risk</figcaption>
       <svg id="ch-ob" viewBox="0 0 480 250" role="img" aria-label="Overbought call spread cumulative return 1993 to 2026"></svg>
-      <div class="legend"><span><i style="background:var(--chart-1)"></i>Signal</span><span><i style="background:var(--chart-2)"></i>Same spread sold on ordinary days, same count</span></div></figure>
-    <div class="callout" style="margin:0;align-self:start"><p><b>What the chart shows.</b> The signal's line keeps rising through 2000&ndash;02, 2008, 2020 and 2022. The every-day
-      version earns the ordinary option premium, about a third as much. The difference between the two lines is what the signal adds.</p></div>
+      <div class="legend"><span><i style="background:var(--chart-1)"></i>Signal</span><span><i style="background:var(--chart-2)"></i>Ordinary days, same count</span></div></figure>
+    <figure class="chart"><figcaption><b>Trades losing 90%+ of risk, by exit rule</b> &middot; 2-day spread, 2016&ndash;2026</figcaption>
+      <svg id="ch-stop-full" viewBox="0 0 480 250" role="img" aria-label="Share of full losses by stop rule"></svg></figure>
   </div>
 
-  <h3>Cutting the full losses: which stop works?</h3>
-  <p class="dek">A credit spread's worst case is losing its whole width. Seven exit rules were replayed on 5-minute bars, 2016&ndash;2026. For
-  the overbought call spread the winner is to buy it back once price trades through the <b>midpoint between the two strikes</b>. For the iron condor it is a stop at
-  either <b>short strike</b>.</p>
-  <div class="chart-grid">
-    <figure class="chart"><figcaption><b>Average return per spread</b> &middot; 2-day expiry, % of risk</figcaption>
-      <svg id="ch-stop-avg" viewBox="0 0 480 230" role="img" aria-label="Average return per spread by stop rule"></svg></figure>
-    <figure class="chart"><figcaption><b>Trades losing 90%+ of risk</b> &middot; 2-day expiry</figcaption>
-      <svg id="ch-stop-full" viewBox="0 0 480 230" role="img" aria-label="Share of full losses by stop rule"></svg></figure>
-  </div>
-  <div class="table-scroll" style="margin-top:14px"><table>
-    <thead><tr><th>Exit rule</th><th>Expiry</th><th>Win rate</th><th>Per spread</th><th>Avg loss</th><th>Profit factor</th><th>Full losses</th><th>Worst</th></tr></thead>
+  <h3>Stops</h3>
+  <p class="dek">Seven exit rules were replayed on 5-minute bars. Best for the call spread: buy it back when price crosses the midpoint between the strikes. Best
+  for the condor: a stop at either short strike.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Exit rule</th><th>Expiry</th><th>Win rate</th><th>Per trade</th><th>Avg loss</th><th>Profit factor</th><th>Full losses</th><th>Worst</th></tr></thead>
     <tbody>
-      <tr><td>Hold to expiry</td><td>1 day</td><td>91%</td><td class="pos">+5.8%</td><td class="neg">&minus;46%</td><td>2.42</td><td>2.0%</td><td class="neg">&minus;100%</td></tr>
-      <tr><td class="nm">Midpoint stop</td><td>1 day</td><td>90%</td><td class="pos">+6.0%</td><td class="neg">&minus;38%</td><td class="pos">2.59</td><td class="pos">0.0%</td><td class="neg">&minus;85%</td></tr>
-      <tr><td>Hold to expiry</td><td>2 days</td><td>86%</td><td class="pos">+10.4%</td><td class="neg">&minus;55%</td><td>2.37</td><td>4.6%</td><td class="neg">&minus;100%</td></tr>
-      <tr><td class="nm">Midpoint stop</td><td>2 days</td><td>83%</td><td class="pos">+10.5%</td><td class="neg">&minus;37%</td><td class="pos">2.65</td><td class="pos">0.0%</td><td class="neg">&minus;72%</td></tr>
+      <tr><td>Call spread, hold to expiry</td><td>2 days</td><td>86%</td><td class="pos">+10.4%</td><td class="neg">&minus;55%</td><td>2.37</td><td>4.6%</td><td class="neg">&minus;100%</td></tr>
+      <tr><td class="nm">Call spread, midpoint stop</td><td>2 days</td><td>83%</td><td class="pos">+10.5%</td><td class="neg">&minus;37%</td><td class="pos">2.65</td><td class="pos">0.0%</td><td class="neg">&minus;72%</td></tr>
       <tr><td>Iron condor, hold to expiry</td><td>5 days</td><td>90%</td><td class="pos">+13.2%</td><td class="neg">&minus;48%</td><td>3.69</td><td>3.0%</td><td class="neg">&minus;100%</td></tr>
-      <tr><td class="nm">Iron condor, stop at a short strike</td><td>5 days</td><td>82%</td><td class="pos">+11.0%</td><td class="neg">&minus;20%</td><td class="pos">4.09</td><td class="pos">0.0%</td><td class="neg">&minus;47%</td></tr>
-      <tr><td>Stop at 2&times; the credit received</td><td>1 day</td><td>49%</td><td class="neg">&minus;0.7%</td><td class="neg">&minus;15%</td><td class="neg">0.91</td><td>0.0%</td><td class="neg">&minus;85%</td></tr>
+      <tr><td class="nm">Iron condor, short-strike stop</td><td>5 days</td><td>82%</td><td class="pos">+11.0%</td><td class="neg">&minus;20%</td><td class="pos">4.09</td><td class="pos">0.0%</td><td class="neg">&minus;47%</td></tr>
+      <tr><td>Call spread, stop at 2&times; credit</td><td>1 day</td><td>49%</td><td class="neg">&minus;0.7%</td><td class="neg">&minus;15%</td><td class="neg">0.91</td><td>0.0%</td><td class="neg">&minus;85%</td></tr>
     </tbody>
   </table></div>
-  <p class="note">The common "stop at 2&times; the credit" rule turned a profitable setup into a losing one. Next-day spreads swing too much intraday, so
-  it stops out trades that would have expired worthless. A stop at the short strike cut losses too, but gave up more return than the midpoint. Only an overnight
-  gap through both strikes can still cause a large loss. The live alert now shows the midpoint stop level.</p>
+  <p class="note">The common "2&times; credit" stop turns a winning setup into a losing one. The remaining risk is an overnight gap through both strikes, which no stop can catch.</p>
 
-  <h3>Stress tests on the newest structures</h3>
-  <p class="dek">Profit factor under harsher assumptions. The comparison with the every-day version stays positive in every row.</p>
+  <h3>Stress tests</h3>
   <div class="table-scroll"><table>
-    <thead><tr><th>Assumption</th><th>Iron condor</th><th>Debit spread</th></tr></thead>
+    <thead><tr><th>Profit factor if&hellip;</th><th>Iron condor</th><th>Debit spread</th></tr></thead>
     <tbody>
       <tr><td>Base model</td><td class="pos">2.61</td><td class="pos">1.84</td></tr>
-      <tr><td>No volatility skew (flat pricing)</td><td class="pos">2.69</td><td class="pos">2.01</td></tr>
-      <tr><td>Costs about $0.06 per leg per side at today's prices</td><td class="pos">2.27</td><td class="pos">1.84</td></tr>
-      <tr><td>Options trade 15% cheaper than the model</td><td>1.46</td><td class="pos">2.12</td></tr>
-      <tr><td>Options trade 15% richer than the model</td><td class="pos">4.06</td><td>1.65</td></tr>
-      <tr><td>Nearby strikes, widths and expiries that also pass</td><td>30 of 36</td><td>13 of 18</td></tr>
+      <tr><td>No volatility skew</td><td class="pos">2.69</td><td class="pos">2.01</td></tr>
+      <tr><td>Costs of ~$0.06 per leg</td><td class="pos">2.27</td><td class="pos">1.84</td></tr>
+      <tr><td>Options 15% cheaper than modeled</td><td>1.46</td><td class="pos">2.12</td></tr>
+      <tr><td>Options 15% richer than modeled</td><td class="pos">4.06</td><td>1.65</td></tr>
+      <tr><td>Nearby settings that also pass</td><td>30 of 36</td><td>13 of 18</td></tr>
     </tbody>
   </table></div>
-
-  <h3>Sizing and execution</h3>
-  <ul class="plain">
-    <li><b>Size by the maximum loss.</b> Risk per spread is the width minus the credit. About one spread in ten loses, so each is sized so a large loss is acceptable.</li>
-    <li><b>Minimum credit.</b> The condor is taken only if the real credit is at least 85% of the model price, because the edge shrinks when options trade cheap.</li>
-    <li><b>Residual risk is the overnight gap.</b> Stops cannot act while the market is closed. A gap through both strikes can still cost most of the risk.</li>
-    <li><b>Beyond SPY and QQQ.</b> Spread results are modeled on the S&amp;P 500 and Nasdaq-100 ETFs, which have 33 years of implied-volatility history (VIX, VXN).
-      The signals that trigger them were validated on the sector ETFs. Applying the same structures to liquid sector-ETF options such as XLF, XLE or XLK is the
-      natural next step; it needs each fund's own volatility history.</li>
-  </ul>
-  <p class="note">Rejected: a put credit spread after a washout, which barely beat its every-day version; iron condors in high-VIX markets, with 25&ndash;38% full losses;
-  and the "2&times; credit" stop.</p>
+  <p class="note">Because the condor's edge shrinks when options trade cheap, it is taken only when the real credit is at least 85% of the model price. Spreads are modeled
+  on SPY and QQQ, which have long implied-volatility histories; extending them to liquid sector-ETF options is the next step.</p>
 </section>
 
 <section id="book">
   <div class="sec-num">05</div>
   <h2>Short-term ideas: hours to days</h2>
-  <p class="dek">Signals held from a few hours to three days. Figures are per trade on the S&amp;P 500 and Nasdaq-100 ETFs, mid-2016 to September 2026, traded as
-  shares. The last column shows the same rule, unchanged, on the 12 other index and sector ETFs: most held there, with smaller edges. Switch views for consistency
-  and the best option contract.</p>
+  <p class="dek">Per-trade results on SPY and QQQ, mid-2016 to 2026, as shares. The last column is the same rule on the 12 other ETFs.</p>
   <div class="tabs" role="group" aria-label="Table view">
     <button type="button" data-view="perf" aria-pressed="true">Performance</button>
     <button type="button" data-view="cons" aria-pressed="false">Consistency</button>
     <button type="button" data-view="opt" aria-pressed="false">Options</button>
   </div>
   <div class="table-scroll"><table id="book-table"><thead></thead><tbody></tbody></table></div>
-  <p class="note">Max drawdown assumes the whole account in every trade, one after another, which is deliberately conservative. Signals tagged
-  <span class="tag warm">high vol</span> switch on only when the prior day's VIX is 20 or higher. <span class="tag">add</span> fires only while another buy is open. "&ndash;" in the ETF column = not yet run under the live rule.
-  Shorts are always closed the same day, because every overnight version failed.</p>
+  <p class="note"><span class="tag warm">high vol</span> = active only when the prior day's VIX is 20+. <span class="tag">add</span> = fires only inside an open buy.
+  &ldquo;&ndash;&rdquo; = not yet tested under the live rule. Max drawdown assumes the full account in every trade. Shorts close the same day.</p>
+
+  <h3>Behind the Daily Bounce Buy</h3>
+  <p class="dek">Buy the close after a daily washout, sell at the first up close. Found on 1993&ndash;2009 and unchanged since; 517 trades, 79% win rate, profit factor 2.8.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Pattern</th><th>Per year</th><th>Win rate</th><th>Per trade</th><th>Profit factor</th><th>Random days</th><th>12 ETFs</th><th>100 stocks</th></tr></thead>
+    <tbody>
+      <tr><td><span class="nm">Deep drop in a fearful market</span></td><td>4</td><td class="pos">84%</td><td class="pos">+1.41%</td><td class="pos">3.3</td><td class="dim">+0.11%</td><td class="pos">PF 1.9</td><td class="pos">PF 1.8</td></tr>
+      <tr><td><span class="nm">Losing streak with a gap lower</span></td><td>4</td><td class="pos">85%</td><td class="pos">+0.90%</td><td class="pos">3.8</td><td class="dim">+0.11%</td><td class="pos">PF 1.7</td><td class="pos">PF 1.5</td></tr>
+      <tr><td><span class="nm">Very oversold, VIX 20+</span></td><td>7</td><td class="pos">80%</td><td class="pos">+1.01%</td><td class="pos">2.8</td><td class="dim">+0.05%</td><td class="pos">PF 1.7</td><td class="pos">PF 1.5</td></tr>
+    </tbody>
+  </table></div>
 </section>
 
 <section id="longterm">
   <div class="sec-num">06</div>
   <h2>Longer-term ideas: weeks to months</h2>
-  <p class="dek">Two holding periods beyond the short-term book: multi-week index trends, and sector ETF rotation measured in months.</p>
 
   <h3>Trend Breakout &middot; weeks</h3>
-  <p class="dek">A close at the highest level in 40 trading days: buy with a stop below, and hold until the price closes under its 20-day low. It is built to capture
-  large moves, winning less than half the time with winners about three times the size of losers.</p>
+  <p class="dek">Buy a close at a 40-day high with a stop below; exit on a close under the 20-day low.</p>
   <div class="stats">
-    <div><span class="v">229</span><span class="k">trades, SPY 1993&ndash; / QQQ 1999&ndash;</span></div>
+    <div><span class="v">229</span><span class="k">trades since 1993</span></div>
     <div><span class="v">39%</span><span class="k">win rate</span></div>
-    <div><span class="v pos">+3.2R / &minus;1.0R</span><span class="k">avg win / avg loss</span></div>
+    <div><span class="v pos">3.2&times;</span><span class="k">avg win vs avg loss</span></div>
     <div><span class="v">2.1</span><span class="k">profit factor</span></div>
-    <div><span class="v pos">+0.66R</span><span class="k">per trade (random entries +0.37R)</span></div>
+    <div><span class="v pos">+0.66R</span><span class="k">per trade (random: +0.37R)</span></div>
   </div>
   <div class="chart-grid">
-    <figure class="chart"><figcaption><b>Trend Breakout</b> &middot; cumulative R (1R = the risk to the stop)</figcaption>
-      <svg id="ch-tb" viewBox="0 0 480 250" role="img" aria-label="Trend breakout cumulative R 1993 to 2026"></svg>
-      <div class="legend"><span><i style="background:var(--chart-1)"></i>Signal</span></div></figure>
-    <div class="callout" style="margin:0;align-self:start"><p><b>Where it works, and where it doesn't.</b> Positive in 1993&ndash;2007, 2008&ndash;15 and 2016&ndash;26, and on every
-      nearby setting (a 30- to 100-day high, a stop 1.25&ndash;2&times; the daily range). On the sector ETFs and the 100 largest stocks it matched random entries, so it is
-      traded only on the S&amp;P 500 and Nasdaq-100 ETFs. With options: a roughly 3-month call about 5% in the money made +13% per trade, and almost none lost half.</p></div>
+    <figure class="chart"><figcaption><b>Trend Breakout, 1993&ndash;2026</b> &middot; cumulative R (1R = risk to the stop)</figcaption>
+      <svg id="ch-tb" viewBox="0 0 480 250" role="img" aria-label="Trend breakout cumulative R 1993 to 2026"></svg></figure>
+    <div class="callout" style="margin:0;align-self:start"><p>Profitable in all three eras since 1993 and on every nearby setting. It did <b>not</b> beat random entries on sector ETFs or single
+      stocks, so it is traded on SPY and QQQ only. As options: a ~3-month call 5% in the money, +13% a trade.</p></div>
   </div>
 
   <h3>Sector ETF rotation &middot; months</h3>
-  <p class="dek">Long-horizon models that move between sector ETFs, tested on 2000&ndash;2024.</p>
   <div class="table-scroll"><table>
-    <thead><tr><th>Model</th><th>Yearly return</th><th>Sharpe ratio</th><th>Worst drawdown</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Model, 2000&ndash;2024</th><th>Yearly return</th><th>Sharpe</th><th>Worst drawdown</th></tr></thead>
     <tbody>
-      <tr><td><span class="nm">Lagging-sector recovery</span><span class="what">Buy the two weakest sectors of the past three years once they recover above their 200-day average.</span></td>
-          <td class="pos">+10.2%</td><td class="pos">0.72</td><td class="neg">&minus;36%</td><td style="white-space:normal">The only long-term model tested that beat the S&amp;P 500 ETF on both return and risk, in both 12-year halves</td></tr>
-      <tr><td><span class="nm">Trend re-entry</span><span class="what">Enter sectors that reclaim their 200-day average after a long spell below it; hold the three strongest.</span></td>
-          <td class="pos">+7.2%</td><td class="pos">0.72</td><td class="neg">&minus;25%</td><td style="white-space:normal">Sidestepped bear markets: 2008 &minus;11% (S&amp;P 500 ETF &minus;37%)</td></tr>
-      <tr><td><span class="nm">Three-model blend</span><span class="what">Recovery, pullback-in-uptrend and an offense/defense regime switch combined.</span></td>
-          <td class="dim">&ndash;</td><td class="pos">0.77</td><td class="neg">&minus;31%</td><td style="white-space:normal">Best risk-adjusted result; 12% volatility</td></tr>
-      <tr><td><span class="nm">S&amp;P 500 ETF, buy and hold</span><span class="what">Benchmark.</span></td>
-          <td>+7.7%</td><td>0.48</td><td class="neg">&minus;55%</td><td></td></tr>
+      <tr><td><span class="nm">Lagging-sector recovery</span><span class="what">The two weakest sectors of the past three years, once back above their 200-day average. Held in both halves.</span></td>
+          <td class="pos">+10.2%</td><td class="pos">0.72</td><td class="neg">&minus;36%</td></tr>
+      <tr><td><span class="nm">Trend re-entry</span><span class="what">Sectors reclaiming their 200-day average; 2008: &minus;11% vs &minus;37% for the S&amp;P 500 ETF.</span></td>
+          <td class="pos">+7.2%</td><td class="pos">0.72</td><td class="neg">&minus;25%</td></tr>
+      <tr><td><span class="nm">Three-model blend</span><span class="what">Recovery, pullback-in-uptrend and a regime switch.</span></td>
+          <td class="dim">&ndash;</td><td class="pos">0.77</td><td class="neg">&minus;31%</td></tr>
+      <tr><td><span class="nm">S&amp;P 500 ETF, buy and hold</span></td><td>+7.7%</td><td>0.48</td><td class="neg">&minus;55%</td></tr>
     </tbody>
   </table></div>
-  <p class="note">Rotation models are research results, not live alerts. Momentum-based rotation, relative-strength breakouts and relative-value rotation were also
-  tested and did not beat buy-and-hold on a risk-adjusted basis (Section 10).</p>
+  <p class="note">Research results, not live alerts.</p>
 </section>
-
 
 <section id="options">
   <div class="sec-num">07</div>
-  <h2>Implementing with options</h2>
-  <p class="dek">The best contract for each signal is in the Options view of the short-term table. The matrix below shows the full grid for the first five buy
-  signals: strike from 2% in the money to 2% out of the money, and expiry the same day, next day or in two days. Hover or tap a cell for all its numbers.</p>
+  <h2>Options grid</h2>
+  <p class="dek">Calls for five buy signals, by strike and expiry. Hover or tap a cell for its full numbers.</p>
   <div class="controls">
     <label>Signal <select id="om-alert"></select></label>
     <label>Entries <select id="om-win"><option>all day</option><option>before 2pm</option></select></label>
@@ -429,220 +376,135 @@
       <option value="half">% losing half+</option><option value="zero">% expiring worthless</option><option value="n">trades</option></select></label>
   </div>
   <div class="table-scroll"><table id="om-table"><thead></thead><tbody></tbody></table></div>
-  <p class="note">In-the-money contracts trade some average return for reliability: fewer trades lose half their premium. Out-of-the-money calls show large
-  averages, but the typical trade expired worthless, and the model flatters them, so they are avoided. Premium stop-losses on bought options made
-  results worse; risk is controlled through position size and strike choice.</p>
+  <p class="note">In-the-money strikes lose half their premium less often. Out-of-the-money averages look large, but the typical trade expired worthless.</p>
 </section>
-
 
 <section id="robust">
   <div class="sec-num">08</div>
   <h2>Robustness</h2>
-  <h3>The same rule on every bar size</h3>
-  <p class="dek">Each rule, unchanged, on every bar size from 5 minutes to 4 hours. Profit factor, SPY and QQQ, 2016&ndash;2026. Green = held in both halves and on 12 other
-  ETFs; &#9679; = traded live.</p>
+  <p class="dek">Each rule, unchanged, from 5-minute to 4-hour bars (profit factor, 2016&ndash;2026). &#9679; = traded live. Real effects hold across a band of
+  neighbouring bar sizes and fade outside it.</p>
   <div class="table-scroll"><table>
     <thead><tr><th>Signal</th><th>5m</th><th>10m</th><th>15m</th><th>20m</th><th>30m</th><th>45m</th><th>1h</th><th>90m</th><th>2h</th><th>3h</th><th>4h</th></tr></thead>
     <tbody>
-      <tr><td class="nm">Fear-Rally Short</td><td class="neg">1.25</td><td class="neg">1.19</td><td class="pos">2.0 &#9679;</td><td class="pos">2.3</td><td class="pos">2.6 &#9679;</td><td class="dim">2.4 &middot; rare</td><td class="dim">3.3 &middot; rare</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td></tr>
+      <tr><td class="nm">Fear-Rally Short</td><td class="neg">1.25</td><td class="neg">1.19</td><td class="pos">2.0 &#9679;</td><td class="pos">2.3</td><td class="pos">2.6 &#9679;</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td></tr>
       <tr><td class="nm">Reversal Buy</td><td class="neg">0.95</td><td class="neg">1.09</td><td class="neg">1.29</td><td class="neg">1.43</td><td class="pos">2.4 &#9679;</td><td class="pos">3.2 &#9679;</td><td class="pos">3.9 &#9679;</td><td class="pos">1.8</td><td class="neg">0.66</td><td class="neg">0.77</td><td class="neg">1.09</td></tr>
-      <tr><td class="nm">Reversal Buy + 4-hour oversold</td><td class="neg">0.86</td><td class="neg">1.16</td><td class="dim">2.5 &middot; weak early</td><td class="dim">1.95 &middot; weak early</td><td class="pos">4.8 &#9679;</td><td class="pos">9.1 &#9679;</td><td class="pos">19 &#9679;</td><td class="pos">1.5</td><td class="neg">0.63</td><td class="neg">0.87</td><td class="dim">3.3 &middot; weak on ETFs</td></tr>
-      <tr><td class="nm">Trend Bounce</td><td class="dim">&ndash;</td><td class="neg">1.24</td><td class="pos">1.6 &middot; thin</td><td class="pos">1.5 &middot; thin</td><td class="dim">1.4</td><td class="pos">1.6 &middot; thin</td><td class="pos">2.4 &#9679;</td><td class="pos">2.3</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td></tr>
+      <tr><td class="nm">Reversal Buy, 4-hour oversold</td><td class="neg">0.86</td><td class="neg">1.16</td><td class="dim">2.5</td><td class="dim">1.95</td><td class="pos">4.8 &#9679;</td><td class="pos">9.1 &#9679;</td><td class="pos">19 &#9679;</td><td class="pos">1.5</td><td class="neg">0.63</td><td class="neg">0.87</td><td class="dim">3.3</td></tr>
+      <tr><td class="nm">Trend Bounce</td><td class="dim">&ndash;</td><td class="neg">1.24</td><td class="dim">1.6</td><td class="dim">1.5</td><td class="dim">1.4</td><td class="dim">1.6</td><td class="pos">2.4 &#9679;</td><td class="pos">2.3</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td></tr>
     </tbody>
   </table></div>
-  <p class="note">Each signal works across a continuous band of neighbouring bar sizes and fails outside it. That is what a real effect looks like, rather than a lucky
-  setting. "Rare" = fewer than 15 trades in ten years; "thin" = holds up, but the average trade is too small to clear costs.</p>
+  <p class="note">Grey = positive but rare, weak early or too small after costs.</p>
 
   <h3>When two timeframes agree</h3>
-  <p class="dek">Live signals split by what the next-larger chart was doing at that moment, read from its last completed bar. The live alerts flag these as size-up signals.</p>
   <div class="table-scroll"><table>
-    <thead><tr><th>Signal</th><th>Trades</th><th>Win rate</th><th>Profit factor</th><th>Per trade</th><th>2016&ndash;21</th><th>2021&ndash;26</th><th>12 other ETFs</th></tr></thead>
+    <thead><tr><th>Signal</th><th>Trades</th><th>Win rate</th><th>Profit factor</th><th>Per trade</th><th>12 other ETFs</th></tr></thead>
     <tbody>
-      <tr><td>1-hour Reversal, 4-hour also oversold</td><td>60</td><td class="pos">90%</td><td class="pos">17</td><td class="pos">+1.05%</td><td class="pos">+1.01%</td><td class="pos">+1.09%</td><td class="pos">PF 1.9</td></tr>
-      <tr><td>1-hour Reversal, 4-hour not oversold</td><td>103</td><td>80%</td><td>1.8</td><td class="pos">+0.19%</td><td class="pos">+0.17%</td><td class="pos">+0.20%</td><td class="dim">&ndash;</td></tr>
-      <tr><td>45-min Reversal, 4-hour also oversold</td><td>59</td><td class="pos">83%</td><td class="pos">8.7</td><td class="pos">+0.65%</td><td class="pos">+0.69%</td><td class="pos">+0.61%</td><td class="pos">PF 2.3</td></tr>
-      <tr><td>30-min Reversal, 4-hour also oversold</td><td>60</td><td class="pos">80%</td><td class="pos">5.4</td><td class="pos">+0.52%</td><td class="pos">+0.48%</td><td class="pos">+0.55%</td><td class="pos">PF 1.65</td></tr>
-      <tr><td>15-min Fear-Rally Short, 1-hour also stretched</td><td>102</td><td>56%</td><td class="pos">2.25</td><td class="pos">+0.17%</td><td class="pos">+0.15%</td><td class="pos">+0.18%</td><td class="pos">PF 1.4</td></tr>
-      <tr><td>30-min Fear-Rally Short, 1-hour also stretched</td><td>24</td><td>67%</td><td class="pos">3.5</td><td class="pos">+0.23%</td><td class="pos">+0.16%</td><td class="pos">+0.33%</td><td class="pos">PF 1.7</td></tr>
+      <tr><td>1-hour Reversal, 4-hour also oversold</td><td>60</td><td class="pos">90%</td><td class="pos">17</td><td class="pos">+1.05%</td><td class="pos">PF 1.9</td></tr>
+      <tr><td>1-hour Reversal, 4-hour not oversold</td><td>103</td><td>80%</td><td>1.8</td><td class="pos">+0.19%</td><td class="dim">&ndash;</td></tr>
+      <tr><td>45-min Reversal, 4-hour also oversold</td><td>59</td><td class="pos">83%</td><td class="pos">8.7</td><td class="pos">+0.65%</td><td class="pos">PF 2.3</td></tr>
+      <tr><td>30-min Reversal, 4-hour also oversold</td><td>60</td><td class="pos">80%</td><td class="pos">5.4</td><td class="pos">+0.52%</td><td class="pos">PF 1.65</td></tr>
+      <tr><td>15-min Fear-Rally Short, 1-hour also stretched</td><td>102</td><td>56%</td><td class="pos">2.25</td><td class="pos">+0.17%</td><td class="pos">PF 1.4</td></tr>
     </tbody>
   </table></div>
-
-</section>
-
-<section id="pipeline">
-  <div class="sec-num">09</div>
-  <h2>Daily signals in depth</h2>
-  <p class="dek">The evidence behind the newest short-term signal.</p>
-  <h3>The three washout patterns behind the Daily Bounce Buy</h3>
-  <p class="dek">Buy at the close after a daily washout and sell at the first up close, three days at most. The patterns were found on 1993&ndash;2009 among 945
-  rule/exit combinations. Each held on 2010&ndash;2026, on 12 ETFs and on the 100 largest stocks. The live alert fires on any of them, plus a fourth,
-  milder oversold pattern: 517 trades since 1993, 79% win rate, profit factor 2.8. The live code, replayed on 2017&ndash;2026, matched 90% of the signals.</p>
-  <div class="table-scroll"><table>
-    <thead><tr><th>Candidate</th><th>Per year</th><th>Win rate</th><th>Avg win</th><th>Avg loss</th><th>Profit factor</th><th>Per trade</th><th>Random days</th><th>Years +</th><th>12 ETFs</th><th>100 stocks</th></tr></thead>
-    <tbody>
-      <tr><td><span class="nm">Deep stretch in a fearful market</span><span class="what">Far below the 20-day range while volatility is high.</span></td>
-          <td>4</td><td class="pos">84%</td><td class="pos">+2.41%</td><td class="neg">&minus;3.85%</td><td class="pos">3.3</td><td class="pos">+1.41%</td><td class="dim">+0.11%</td><td>90%</td><td class="pos">PF 1.9</td><td class="pos">PF 1.8</td></tr>
-      <tr><td><span class="nm">Losing streak with a gap lower</span><span class="what">Several down days in a row, then an open below the prior low.</span></td>
-          <td>4</td><td class="pos">85%</td><td class="pos">+1.45%</td><td class="neg">&minus;2.18%</td><td class="pos">3.8</td><td class="pos">+0.90%</td><td class="dim">+0.11%</td><td>91%</td><td class="pos">PF 1.7</td><td class="pos">PF 1.5</td></tr>
-      <tr><td><span class="nm">Short-term oversold, elevated volatility</span><span class="what">A very oversold 2-day momentum reading when VIX is 20+.</span></td>
-          <td>7</td><td class="pos">80%</td><td class="pos">+1.96%</td><td class="neg">&minus;2.72%</td><td class="pos">2.8</td><td class="pos">+1.01%</td><td class="dim">+0.05%</td><td>96%</td><td class="pos">PF 1.7</td><td class="pos">PF 1.5</td></tr>
-    </tbody>
-  </table></div>
-  <div class="chart-grid" style="margin-top:14px">
-    <figure class="chart"><figcaption><b>Daily bounce candidates</b> &middot; cumulative % (sum of per-trade returns), SPY + QQQ</figcaption>
-      <svg id="ch-bn" viewBox="0 0 480 250" role="img" aria-label="Daily bounce candidates cumulative return"></svg>
-      <div class="legend"><span><i style="background:var(--chart-1)"></i>Deep stretch, fearful market</span><span><i style="background:var(--chart-3)"></i>Losing streak with a gap lower</span></div></figure>
-    <div class="callout" style="margin:0;align-self:start"><p><b>Overlap with the Weak-Day Buy.</b> About 60% of the "fearful market" signal days are also Weak-Day Buy days.
-      On the other days the patterns still averaged +0.8 to +1.0% per trade, so both alerts run, and the alert says not to double up. The 3:45 pm estimate caught 85&ndash;100%
-      of the real signals. The oversold-volatility candidate traded less well on the estimate for SPY (+0.45% against +0.55% on the real close).</p></div>
-  </div>
-
 </section>
 
 <section id="failed">
-  <div class="sec-num">10</div>
+  <div class="sec-num">09</div>
   <h2>What failed</h2>
-  <p class="dek">A research log of ideas that were tested and rejected, and why. Ideas that fail are a normal part of the process.</p>
   <ul class="log">
-    <li><b>Key price levels &amp; volume profile</b><span>Price action around major daily levels was no better than around randomly placed placebo levels.</span></li>
-    <li><b>Breakouts on sector ETFs and single stocks</b><span>The 40-day breakout matched random entries on 12 ETFs and 100 stocks. Its edge is specific to the broad indexes.</span></li>
-    <li><b>Short breakdowns, squeezes, opening-range and gap-and-go</b><span>No version produced the targeted 50/50, 3&ndash;5&times; payoff profile out of sample.</span></li>
-    <li><b>4-hour divergence and daily reversal buys</b><span>Strong on SPY/QQQ but failed the 12-ETF check (4-hour), or lost money 1999&ndash;2026 (daily).</span></li>
-    <li><b>Put spreads on weak days</b><span>Profitable after 2016 but lost money from 1993 to 2015, so they were rejected despite the attractive recent record.</span></li>
-    <li><b>"2&times; credit" spread stop</b><span>Turned a profit factor of 2.4 into 0.9 on next-day spreads, because intraday swings stop out eventual winners.</span></li>
-    <li><b>Sector momentum &amp; relative-strength rotation</b><span>Dual momentum, relative-strength breakouts and relative-value rotation all came in at or below buy-and-hold on a
-      risk-adjusted basis; the market-neutral version earned about zero.</span></li>
-    <li><b>Overnight-return momentum</b><span>It looked strong but was mostly market exposure. Hedged, it lost about 2% a year.</span></li>
-    <li><b>Calendar, holiday and lunar effects</b><span>None passed a permutation test (Appendix).</span></li>
-    <li><b>Six weaker live alerts retired</b><span>In September 2026 the six weakest or most redundant signals were cut to keep the alert set small and high quality.</span></li>
+    <li><b>Key price levels</b><span>No better than randomly placed placebo levels.</span></li>
+    <li><b>Breakouts on sector ETFs and stocks</b><span>Matched random entries; the edge exists only on the broad indexes.</span></li>
+    <li><b>Breakdowns, squeezes, opening-range, gap-and-go</b><span>None held out of sample.</span></li>
+    <li><b>4-hour divergence, daily reversal</b><span>Failed the ETF check, or lost money 1999&ndash;2026.</span></li>
+    <li><b>Put spreads on weak days</b><span>Profitable since 2016, but lost money 1993&ndash;2015.</span></li>
+    <li><b>Momentum and relative-strength rotation</b><span>At or below buy-and-hold after risk.</span></li>
+    <li><b>Overnight-return momentum</b><span>Mostly market exposure; hedged, it lost about 2% a year.</span></li>
+    <li><b>Calendar, holiday and lunar effects</b><span>None passed a permutation test.</span></li>
   </ul>
 </section>
 
 <section id="changes">
-  <div class="sec-num">11</div>
+  <div class="sec-num">10</div>
   <h2>Change log</h2>
-  <p class="dek">Every change to the live rule set is dated and justified. No rule changes because of a single recent result; each change follows a test that anyone
-  with the same data could repeat.</p>
+  <p class="dek">Every change to the live rule set is dated and justified.</p>
   <ul class="log">
-    <li><b>30 Sep 2026 &middot; Added</b><span>Trend Breakout (swing), Daily Bounce Buy and the rich-premium iron condor. Each passed the full validation ladder, and its
-      production code reproduced the research signals before launch.</span></li>
-    <li><b>30 Sep 2026 &middot; Amended</b><span>Overbought call spread: midpoint stop added after seven exit rules were compared on 5-minute data. It removed every full loss
-      with no loss of return.</span></li>
-    <li><b>28 Sep 2026 &middot; Retired</b><span>Six signals (30-minute divergence and pullback, 90-minute reversal, 1-hour fear-rally short, quiet dip, single-stock trend dip),
-      as the weakest or most redundant. Open positions kept receiving their exits.</span></li>
-    <li><b>28 Sep 2026 &middot; Corrected</b><span>4-hour, 90-minute and 45-minute bars are now cut on the exchange clock, after a daylight-saving drift was found. Re-tested on the
-      corrected bars, the 4-hour divergence failed the ETF check and was removed.</span></li>
-    <li><b>28 Sep 2026 &middot; Added</b><span>Defined-risk call-spread setups, published to a separate channel, with 33 years of history behind them.</span></li>
-    <li><b>27 Sep 2026 &middot; Rebuilt</b><span>Intraday rule set rebuilt around the actual live exits. The two plain buy grades (profit factor about 1.5) were removed.</span></li>
+    <li><b>30 Sep 2026 &middot; Added</b><span>Trend Breakout, Daily Bounce Buy and the rich-premium iron condor; midpoint stop on the call spread after comparing seven exit rules.</span></li>
+    <li><b>28 Sep 2026 &middot; Added</b><span>Defined-risk spreads channel; real-time Schwab data in production; volatility-divergence and big-day signals.</span></li>
+    <li><b>28 Sep 2026 &middot; Retired</b><span>Six weakest or redundant signals. Open positions kept their exits.</span></li>
+    <li><b>28 Sep 2026 &middot; Corrected</b><span>Multi-hour bars recut on the exchange clock (daylight-saving drift); the 4-hour divergence failed re-testing and was removed.</span></li>
+    <li><b>28 Sep 2026 &middot; Researched</b><span>A walk-forward search of about 13,000 indicator combinations, checked on 12 ETFs and against a last-hour baseline.</span></li>
+    <li><b>27 Sep 2026 &middot; Rebuilt</b><span>Intraday signals rebuilt around their real exits, with multi-timeframe tiers and option guidance; weaker grades removed.</span></li>
+    <li><b>26 Sep 2026 &middot; Retracted</b><span>A monthly sector alert, after a permutation test showed its edge was indistinguishable from chance.</span></li>
+    <li><b>Sep 2026 &middot; Built</b><span>Bull-flag momentum scanner and LEAPS scanner; data requests batched to stay within API and memory limits.</span></li>
+    <li><b>Aug 2026 &middot; Researched</b><span>Mean-reversion study across 300 stocks; sector rotation, momentum and overnight studies; alert scheduler rebuilt after silent failures.</span></li>
+    <li><b>Apr 2026 &middot; Simplified</b><span>Cut to the strongest strategies; added sector-rotation and implied-vs-historical volatility scanners.</span></li>
+    <li><b>Mar 2026 &middot; Launched</b><span>Automated multi-strategy alert service in Python, deployed on Render, backed by 10-year backtests.</span></li>
+    <li><b>Before 2026 &middot; Foundations</b><span>Years of discretionary research and custom indicators in TradingView (Pine Script) and thinkorswim (thinkScript).</span></li>
   </ul>
 </section>
 
 <section id="limits">
-  <div class="sec-num">12</div>
+  <div class="sec-num">11</div>
   <h2>Limitations</h2>
   <ul class="plain">
-    <li><b>Modeled option prices.</b> Options and spreads are priced from index volatility with a standard skew, not historical quotes. Real bid-ask spreads,
-      especially on short-dated contracts, would reduce returns.</li>
-    <li><b>Multiple testing.</b> Thousands of rules were screened. Split samples, untouched ETFs, random baselines and parameter plateaus guard against this, but
-      the reported numbers for the chosen rules are still likely somewhat optimistic.</li>
-    <li><b>Survivorship.</b> The stock universe is today's 100 largest companies, which flatters results on stocks. Stocks are only used as a pass/fail check.
-      The proper fix is point-in-time index membership, meaning the constituents as they stood on each date, including deletions.</li>
-    <li><b>Regime dependence.</b> Several signals are active only in high-volatility markets and can go quiet for weeks. About 38% of days have any alert.</li>
-    <li><b>Correlation between signals.</b> Many buys fire in the same selloffs. Results are per signal, not a combined portfolio.</li>
-    <li><b>Spreads on sector ETFs not yet modeled.</b> The sector ETFs lack a long implied-volatility history, so spread results are shown for the index ETFs only.</li>
-    <li><b>Intraday history starts in 2016.</b> Intraday signals have ten years of data; daily ones have 33.</li>
+    <li><b>Modeled option prices.</b> Real bid-ask spreads, especially on short-dated contracts, would reduce returns.</li>
+    <li><b>Multiple testing.</b> Thousands of rules were screened; the checks above guard against this, but reported numbers are likely somewhat optimistic.</li>
+    <li><b>Survivorship.</b> The stock universe is today's largest companies; point-in-time index membership would fix this.</li>
+    <li><b>Regimes.</b> Several signals need high volatility and can go quiet for weeks.</li>
+    <li><b>Overlap.</b> Many buys fire in the same selloffs; results are per signal, not a portfolio.</li>
   </ul>
 </section>
 
 <section id="appendix">
-  <div class="sec-num">13</div>
+  <div class="sec-num">12</div>
   <h2>Appendix: market background</h2>
-  <p class="dek">Not signals. Background on when the market has tended to move, and which popular calendar ideas hold up.</p>
 
   <h3>Seasonality</h3>
-  <figure class="chart"><figcaption><b>SPY average return by calendar month</b> &middot; 19 years</figcaption>
+  <figure class="chart"><figcaption><b>SPY average return by month</b> &middot; 19 years</figcaption>
     <svg id="chart-spy-months" viewBox="0 0 780 220" role="img" aria-label="SPY average return by month"></svg></figure>
-  <p class="note">September is the only reliably negative month. April, May, July and November are the strongest (up in 75&ndash;80% of years).</p>
 
-  <h3>Sector seasonality map</h3>
+  <h3>Sector seasonality</h3>
   <div class="table-scroll"><table class="heat"><tbody id="sector-heatmap-body"></tbody></table></div>
-  <p class="note">Average monthly return by sector ETF (S&amp;P 500 Select Sector SPDRs and industry ETFs), 2005&ndash;2024. This is a map, not a signal: picking each sector's "best month" did no better than random.</p>
+  <p class="note">Average monthly return by sector ETF, 2005&ndash;2024. A map, not a signal: trading each sector's best month did no better than chance.</p>
 
-  <h3>Calendar &amp; overnight events</h3>
+  <h3>Overnight events</h3>
   <figure class="chart"><figcaption><b>SPY held overnight into each event</b> &middot; Sharpe ratio, 2013&ndash;2024</figcaption>
     <svg id="chart-calendar" viewBox="0 0 780 220" role="img" aria-label="Overnight event Sharpe ratios"></svg></figure>
-  <div class="table-scroll" style="margin-top:12px"><table>
-    <thead><tr><th>Event (SPY, overnight)</th><th>Per year</th><th>Avg per night</th><th>Nights up</th><th>Years positive</th></tr></thead>
-    <tbody>
-      <tr><td>Night after a sharp selloff</td><td>22</td><td class="pos">+0.17%</td><td>64%</td><td class="pos">100%</td></tr>
-      <tr><td>Fed decision eve, market already soft</td><td>2</td><td class="pos">+0.35%</td><td>&mdash;</td><td class="pos">92%</td></tr>
-      <tr><td>Fed decision eve</td><td>8</td><td class="pos">+0.15%</td><td>67%</td><td>75%</td></tr>
-      <tr><td>Two nights before a Fed decision</td><td>8</td><td class="pos">+0.20%</td><td>61%</td><td class="pos">92%</td></tr>
-      <tr><td>First night of the month</td><td>12</td><td class="pos">+0.12%</td><td>67%</td><td>67%</td></tr>
-      <tr><td>Turn of the month (last 3 + first 2 nights)</td><td>60</td><td>+0.04%</td><td>57%</td><td>83%</td></tr>
-      <tr><td>Night after the Fed decision</td><td>8</td><td class="neg">&minus;0.14%</td><td>51%</td><td>50%</td></tr>
-      <tr><td>Jobs report eve</td><td>11</td><td>+0.02%</td><td>60%</td><td>58%</td></tr>
-      <tr><td>Monthly options expiration eve</td><td>12</td><td>+0.04%</td><td>54%</td><td>58%</td></tr>
-      <tr><td>Quarterly "triple witching" eve</td><td>4</td><td>0.00%</td><td>53%</td><td>58%</td></tr>
-    </tbody>
-  </table></div>
-  <p class="note">Holding SPY every night averaged +0.04% over this period, so the Fed-eve and post-selloff nights stand out. The edges are small per night and fade quickly
-  after costs.</p>
 
   <h3>Calendar ideas that don't hold up</h3>
   <div class="table-scroll"><table>
-    <thead><tr><th>Idea (SPY)</th><th>Sample</th><th>Avg return</th><th>Win rate</th><th>Chance it's luck</th></tr></thead>
+    <thead><tr><th>Idea (SPY)</th><th>Sample</th><th>Avg return</th><th>Chance it's luck</th></tr></thead>
     <tbody>
-      <tr><td>Rosh Hashanah (eve &rarr; day)</td><td>20</td><td>+0.04%</td><td>45%</td><td>88%</td></tr>
-      <tr><td>Yom Kippur (eve &rarr; day)</td><td>20</td><td>+0.15%</td><td>55%</td><td>57%</td></tr>
-      <tr><td>Passover (eve &rarr; first day)</td><td>20</td><td>+0.40%</td><td>70%</td><td>12%</td></tr>
-      <tr><td>Hanukkah (eve &rarr; first night)</td><td>20</td><td>+0.25%</td><td>60%</td><td>33%</td></tr>
-      <tr><td>Days near a new moon</td><td>706</td><td>+0.08%/day (others +0.03%)</td><td>57%</td><td>18%</td></tr>
-      <tr><td>Days near a full moon</td><td>697</td><td>+0.08%/day (others +0.03%)</td><td>54%</td><td>23%</td></tr>
-      <tr><td>Santa Claus rally (overnight)</td><td>77</td><td class="neg">&minus;0.02%/night</td><td>62%</td><td>not significant</td></tr>
-      <tr><td>Buying before a holiday, selling after</td><td>106</td><td class="neg">&minus;0.02%</td><td>52%</td><td>not significant</td></tr>
-      <tr><td>Last / first night of the year</td><td>12 each</td><td class="neg">&minus;0.10%</td><td>42&ndash;64%</td><td>not significant</td></tr>
-      <tr><td>Each sector's "best month" of the year</td><td>20 years</td><td>&mdash;</td><td>&mdash;</td><td>55&ndash;86% (random-like)</td></tr>
+      <tr><td>Passover (eve &rarr; first day)</td><td>20</td><td>+0.40%</td><td>12%</td></tr>
+      <tr><td>Days near a new moon</td><td>706</td><td>+0.08%/day</td><td>18%</td></tr>
+      <tr><td>Days near a full moon</td><td>697</td><td>+0.08%/day</td><td>23%</td></tr>
+      <tr><td>Santa Claus rally (overnight)</td><td>77</td><td class="neg">&minus;0.02%/night</td><td>not significant</td></tr>
+      <tr><td>Before a holiday, sell after</td><td>106</td><td class="neg">&minus;0.02%</td><td>not significant</td></tr>
     </tbody>
   </table></div>
-  <p class="note">"Chance it's luck" is the share of random samples of the same size that did at least this well (a permutation test). Below 5% would count as real.</p>
-
-  <h3>Correlations worth knowing</h3>
-  <ul class="plain">
-    <li><b>Fear spikes mean-revert.</b> After SPY falls more than the options market implied for the day, the next five days have averaged +0.45%, about double the normal +0.23%.</li>
-    <li><b>Broad selloffs bounce better than narrow ones.</b> Dip-buys taken when most of the largest stocks were below their own average did markedly better.</li>
-    <li><b>Bond yields lead gold miners by about three months.</b> Rising 10-year yields were followed by weaker gold miners 10&ndash;13 weeks later (correlation &minus;0.17).</li>
-    <li><b>The Fed's balance sheet tracked stocks, then stopped.</b> The link with six-month SPY returns (+0.25) disappeared out of sample; it was mostly a quantitative-easing-era effect.</li>
-  </ul>
+  <p class="note">"Chance it's luck" is from a permutation test; under 5% would count as real.</p>
 
   <h3>Glossary</h3>
   <dl class="gloss">
-    <dt>Win rate</dt><dd>Share of trades that made money after costs.</dd>
     <dt>Profit factor</dt><dd>Gross profits divided by gross losses. 1.0 breaks even; above 2 is strong.</dd>
-    <dt>Per trade</dt><dd>Average return per trade after costs, winners and losers together.</dd>
-    <dt>R</dt><dd>Profit measured in units of the risk taken. A trade risking 2% that gains 6% made 3R.</dd>
-    <dt>Return on risk</dt><dd>For spreads: profit divided by the maximum possible loss of the spread.</dd>
-    <dt>Max drawdown</dt><dd>Largest peak-to-trough fall of the equity curve, assuming the whole account in each trade in sequence.</dd>
-    <dt>In / at / out of the money</dt><dd>A call's strike below / at / above the current price. In-the-money options cost more but move more like the shares.</dd>
-    <dt>Implied vs realized volatility</dt><dd>The movement option prices expect versus the movement that actually occurred recently.</dd>
-    <dt>Baseline</dt><dd>The same trade taken on random or ordinary days. A signal must beat it.</dd>
+    <dt>R</dt><dd>Profit in units of the risk taken. Risking 2% to make 6% is 3R.</dd>
+    <dt>Return on risk</dt><dd>For spreads: profit divided by the spread's maximum loss.</dd>
+    <dt>Max drawdown</dt><dd>Largest peak-to-trough fall, with the full account in each trade.</dd>
+    <dt>Implied vs realized volatility</dt><dd>The movement option prices expect versus the movement that happened.</dd>
   </dl>
 </section>
 
 <section id="about">
-  <div class="sec-num">14</div>
   <h2>About the author</h2>
-  <p><b>Richard Pagano</b> designed and built every part of this project: the rule-based methodologies, the point-in-time data pipeline, the backtesting and validation
-  framework, the option-pricing model and the production service that runs the signals daily. The work is written the way an index methodology is written: every
-  signal is a fixed rule applied mechanically, every input is documented, and every change is dated and justified in the change log.</p>
+  <p><b>Richard Pagano</b> is an Eagle Scout and a graduate of High Point University, with a lasting passion for quantitative trading and finance. He has spent years
+  developing trading research, from hand-built indicators to the automated, tested system described here. He designed and built all of it: the methodology, the
+  data pipeline, the validation framework, the option-pricing model and the production service. Each signal is a fixed rule, each input is documented and each change is
+  logged, the same way an index methodology is maintained.</p>
 </section>
 
 <footer>
-  <p><b>Independence.</b> This is independent research. It is not affiliated with, sponsored by or endorsed by S&amp;P Dow Jones Indices, Nasdaq, Cboe or any
-  fund sponsor. S&amp;P 500 is a registered trademark of S&amp;P Dow Jones Indices LLC; Nasdaq-100 is a registered trademark of Nasdaq, Inc.; VIX is a
-  trademark of Cboe Exchange, Inc.</p>
-  <p><b>About this research.</b> All results are historical simulations on SPY and QQQ data with the rules fixed in advance; the signals now run as live alerts. Option
-  results are modeled, not broker fills. Past results do not guarantee future returns. This is research, not investment advice.</p>
+  <p><b>Independence.</b> Independent research, not affiliated with S&amp;P Dow Jones Indices, Nasdaq, Cboe or any fund sponsor. S&amp;P 500 is a registered trademark of
+  S&amp;P Dow Jones Indices LLC; Nasdaq-100 of Nasdaq, Inc.; VIX of Cboe Exchange, Inc. Historical simulations; option results are modeled. Not investment advice.</p>
 </footer>
 </div>
 
