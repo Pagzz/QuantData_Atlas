@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Signal Atlas · Richard Pagano</title>
+<meta name="author" content="Richard Pagano">
+<meta name="description" content="Independent systematic research on the S&amp;P 500 and Nasdaq-100: point-in-time methodology, validated signals, options and spreads, and what failed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#f4f5f7; --surface:#ffffff; --surface-2:#eef0f4; --ink:#141b27; --ink-2:#465063; --ink-3:#6f7889;
+    --line:#d9dde5; --line-2:#e7e9ee; --accent:#1d5b8f; --accent-soft:#e3edf6; --gold:#9a6a12;
+    --pos:#18794e; --neg:#b3372f; --pos-soft:#e2f2ea; --neg-soft:#f8e4e2;
+    --hm-p2:#b9e0c9; --hm-p1:#dcefe3; --hm-m1:#f5dcd8; --hm-m2:#ecbcb4; --hm-ink:#141b27;
+    --chart-1:#1d5b8f; --chart-2:#9aa3b3; --chart-3:#18794e;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#0c111b; --surface:#131a27; --surface-2:#19212f; --ink:#e6e9ef; --ink-2:#aab2c2; --ink-3:#7c8597;
+      --line:#283247; --line-2:#1f2838; --accent:#7fb2dd; --accent-soft:#1a2a3d; --gold:#d6ab5c;
+      --pos:#5fc28f; --neg:#e57f73; --pos-soft:#15291f; --neg-soft:#2d1917;
+      --hm-p2:#1d5634; --hm-p1:#173826; --hm-m1:#3b201c; --hm-m2:#5c2921; --hm-ink:#e6e9ef;
+      --chart-1:#7fb2dd; --chart-2:#5b6477; --chart-3:#5fc28f;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#0c111b; --surface:#131a27; --surface-2:#19212f; --ink:#e6e9ef; --ink-2:#aab2c2; --ink-3:#7c8597;
+    --line:#283247; --line-2:#1f2838; --accent:#7fb2dd; --accent-soft:#1a2a3d; --gold:#d6ab5c;
+    --pos:#5fc28f; --neg:#e57f73; --pos-soft:#15291f; --neg-soft:#2d1917;
+    --hm-p2:#1d5634; --hm-p1:#173826; --hm-m1:#3b201c; --hm-m2:#5c2921; --hm-ink:#e6e9ef;
+    --chart-1:#7fb2dd; --chart-2:#5b6477; --chart-3:#5fc28f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+       font-size:15px;line-height:1.6;padding-inline:16px;}
+  .wrap{max-width:1000px;margin:0 auto;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;}
+  a{color:var(--accent);}
+
+  /* masthead */
+  .mast{padding-block:40px 26px;border-bottom:2px solid var(--ink);}
+  .kicker{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+          display:flex;flex-wrap:wrap;gap:4px 18px;}
+  .kicker b{color:var(--accent);font-weight:500;}
+  h1{font-family:'IBM Plex Serif',Georgia,serif;font-weight:600;font-size:clamp(34px,5.5vw,52px);line-height:1.05;margin:14px 0 10px;
+     letter-spacing:-.01em;text-wrap:balance;}
+  .byline{font-size:14px;color:var(--ink-2);margin:0 0 14px;}
+  .byline b{color:var(--ink);font-weight:600;}
+  .standfirst{font-size:17px;color:var(--ink-2);max-width:64ch;margin:0;}
+  .figures{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0;margin-top:26px;border-top:1px solid var(--line);}
+  .figures div{padding:14px 16px 12px 0;border-bottom:1px solid var(--line);}
+  .figures .v{font-family:'IBM Plex Serif',Georgia,serif;font-size:30px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;}
+  .figures .k{font-size:12.5px;color:var(--ink-3);display:block;margin-top:4px;max-width:24ch;}
+
+  /* nav */
+  nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+          overflow-x:auto;white-space:nowrap;margin-inline:-16px;padding-inline:16px;}
+  nav.toc ol{list-style:none;margin:0 auto;padding:0;display:flex;gap:2px;max-width:1000px;counter-reset:s;}
+  nav.toc li{counter-increment:s;}
+  nav.toc a{display:block;padding:11px 10px;font-size:13px;color:var(--ink-2);text-decoration:none;}
+  nav.toc a::before{content:counter(s,decimal-leading-zero) " ";font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);}
+  nav.toc a:hover{color:var(--accent);}
+
+  /* sections */
+  section{padding-block:40px 34px;border-bottom:1px solid var(--line);scroll-margin-top:48px;}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:.1em;}
+  h2{font-family:'IBM Plex Serif',Georgia,serif;font-weight:600;font-size:28px;line-height:1.2;margin:4px 0 8px;text-wrap:balance;}
+  h3{font-family:'IBM Plex Serif',Georgia,serif;font-weight:600;font-size:19px;margin:30px 0 6px;text-wrap:balance;}
+  .dek{color:var(--ink-2);margin:0 0 18px;max-width:68ch;}
+  p{max-width:70ch;}
+  .note{font-size:13px;color:var(--ink-3);margin:12px 0 0;max-width:78ch;}
+
+  /* summary */
+  .findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:6px;}
+  .finding{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);padding:14px 16px 12px;}
+  .finding h4{margin:0 0 4px;font-size:15px;}
+  .finding p{margin:0;font-size:14px;color:var(--ink-2);}
+
+  /* methodology ladder */
+  .ladder{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:0 28px;counter-reset:l;}
+  .ladder li{counter-increment:l;display:grid;grid-template-columns:34px 1fr;gap:10px;padding:13px 0;border-top:1px solid var(--line);}
+  .ladder li::before{content:counter(l);font-family:'IBM Plex Serif',Georgia,serif;font-size:22px;font-weight:600;color:var(--accent);line-height:1.1;}
+  .ladder b{display:block;font-size:14.5px;}
+  .ladder span{font-size:13.5px;color:var(--ink-2);}
+
+  /* tables */
+  .table-scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums;}
+  th,td{padding:9px 11px;text-align:right;border-bottom:1px solid var(--line-2);white-space:nowrap;vertical-align:top;}
+  th:first-child,td:first-child{text-align:left;white-space:normal;min-width:230px;}
+  thead th{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;
+           background:var(--surface-2);border-bottom:1px solid var(--line);vertical-align:bottom;}
+  tbody tr:last-child td{border-bottom:none;}
+  tr.grp td{background:var(--surface-2);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+            color:var(--ink-2);padding-block:7px;}
+  .nm{font-weight:600;}
+  .what{display:block;color:var(--ink-3);font-size:12.5px;margin-top:2px;font-weight:400;}
+  .pos{color:var(--pos);} .neg{color:var(--neg);} .dim{color:var(--ink-3);}
+  .tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+       border:1px solid var(--line);padding:0 5px;margin-left:6px;color:var(--accent);vertical-align:1px;font-weight:500;}
+  .tag.warm{color:var(--gold);}
+  .tag.res{color:var(--ink-3);}
+  .tabs{display:flex;flex-wrap:wrap;gap:0;margin:0 0 -1px;}
+  .tabs button{font:500 13px 'IBM Plex Sans',sans-serif;color:var(--ink-2);background:transparent;border:1px solid transparent;border-bottom:none;
+               padding:9px 16px;cursor:pointer;}
+  .tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);border-color:var(--line);}
+
+  /* charts */
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;}
+  .chart{background:var(--surface);border:1px solid var(--line);padding:14px 14px 8px;margin:0;}
+  .chart figcaption{font-size:13px;color:var(--ink-2);margin:0 0 6px;}
+  .chart figcaption b{color:var(--ink);font-weight:600;}
+  .chart svg{width:100%;height:auto;display:block;}
+  .legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--ink-3);margin:6px 0 2px;}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:3px;margin-right:6px;}
+  svg .grid{stroke:var(--line-2);stroke-width:1;} svg .axis{stroke:var(--line);stroke-width:1.2;}
+  svg .tick{fill:var(--ink-3);font:11px 'IBM Plex Mono',monospace;}
+  svg .lbl{fill:var(--ink-2);font:11.5px 'IBM Plex Sans',sans-serif;text-anchor:middle;}
+  svg .val{fill:var(--ink);font:11px 'IBM Plex Mono',monospace;text-anchor:middle;}
+  svg .l1{fill:none;stroke:var(--chart-1);stroke-width:2.2;} svg .l2{fill:none;stroke:var(--chart-2);stroke-width:2;stroke-dasharray:5 4;}
+  svg .l3{fill:none;stroke:var(--chart-3);stroke-width:2.2;}
+  svg .b1{fill:var(--chart-1);} svg .b2{fill:var(--chart-2);} svg .bpos{fill:var(--pos);} svg .bneg{fill:var(--neg);} svg .bgold{fill:var(--gold);}
+
+  /* controls, misc */
+  .controls{display:flex;flex-wrap:wrap;gap:10px 18px;margin:6px 0 10px;font-size:13px;color:var(--ink-2);}
+  .controls select{background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:4px 8px;font:inherit;margin-left:6px;}
+  #om-table td{text-align:center;} #om-table td:first-child{text-align:left;min-width:150px;}
+  .heat td,.heat th{text-align:center;padding:5px 6px;font-size:12px;min-width:0;} .heat td:first-child,.heat th:first-child{text-align:left;min-width:44px;}
+  .hm-p2{background:var(--hm-p2);color:var(--hm-ink);} .hm-p1{background:var(--hm-p1);color:var(--hm-ink);} .hm-n{color:var(--ink-3);}
+  .hm-m1{background:var(--hm-m1);color:var(--hm-ink);} .hm-m2{background:var(--hm-m2);color:var(--hm-ink);}
+  .stats{display:flex;flex-wrap:wrap;gap:10px 30px;margin:8px 0 14px;}
+  .stats div{display:flex;flex-direction:column;}
+  .stats .v{font-family:'IBM Plex Serif',Georgia,serif;font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .stats .k{font-size:12px;color:var(--ink-3);}
+  .log{list-style:none;padding:0;margin:0;border-top:1px solid var(--line);}
+  .log li{display:grid;grid-template-columns:minmax(180px,.9fr) 2fr;gap:4px 20px;padding:11px 0;border-bottom:1px solid var(--line-2);font-size:14px;}
+  .log li b{font-weight:600;}
+  .log li span{color:var(--ink-2);}
+  @media (max-width:620px){ .log li{grid-template-columns:1fr;} }
+  .callout{background:var(--accent-soft);border-left:3px solid var(--accent);padding:12px 16px;margin:16px 0;font-size:14px;max-width:78ch;}
+  .callout p{margin:0;}
+  dl.gloss{display:grid;grid-template-columns:minmax(150px,max-content) 1fr;gap:8px 22px;margin:0;font-size:14px;}
+  dl.gloss dt{font-weight:600;} dl.gloss dd{margin:0;color:var(--ink-2);}
+  @media (max-width:560px){ dl.gloss{grid-template-columns:1fr;} dl.gloss dd{margin-bottom:6px;} }
+  ul.plain{padding-left:18px;margin:0;max-width:78ch;} ul.plain li{margin:6px 0;color:var(--ink-2);font-size:14px;} ul.plain b{color:var(--ink);}
+  footer{padding-block:26px 44px;color:var(--ink-3);font-size:12.5px;}
+  footer p{max-width:80ch;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast">
+  <div class="kicker"><span><b>Independent research</b></span><span>S&amp;P 500 &amp; Nasdaq-100</span><span>Data 1993&ndash;2026</span><span>Updated 30 Sep 2026</span></div>
+  <h1>Signal Atlas</h1>
+  <p class="byline">By <b>Richard Pagano</b> &middot; <a href="https://github.com/Pagzz">github.com/Pagzz</a></p>
+  <p class="standfirst">A library of short-horizon signals on the S&amp;P 500 and the Nasdaq-100, traded through their most liquid ETFs (SPY and QQQ).
+  Every signal was built on point-in-time data and simulated with its live entry and exit. Each was validated out of sample, on sector indexes and index
+  constituents it was never tuned on, and against random entries. The signals now run in a production alerting service.</p>
+  <div class="figures">
+    <div><span class="v">18</span><span class="k">live signals, plus 3 option-spread setups</span></div>
+    <div><span class="v">14,000+</span><span class="k">rule variants screened to find them</span></div>
+    <div><span class="v">2.6</span><span class="k">median profit factor across the live signals</span></div>
+    <div><span class="v">112</span><span class="k">sector ETFs and index constituents used only for validation</span></div>
+  </div>
+</header>
+</div>
+
+<nav class="toc" aria-label="Contents"><ol>
+  <li><a href="#summary">Summary</a></li><li><a href="#method">Method</a></li><li><a href="#data">Data</a></li><li><a href="#book">Strategy book</a></li>
+  <li><a href="#options">Options</a></li><li><a href="#spreads">Spreads</a></li><li><a href="#robust">Robustness</a></li>
+  <li><a href="#pipeline">Daily signals</a></li><li><a href="#failed">What failed</a></li><li><a href="#changes">Change log</a></li><li><a href="#limits">Limitations</a></li>
+  <li><a href="#appendix">Appendix</a></li>
+</ol></nav>
+
+<div class="wrap">
+
+<section id="summary">
+  <div class="sec-num">01</div>
+  <h2>Summary</h2>
+  <p class="dek">The research asks one question over and over: after a specific, measurable market condition, did SPY and QQQ behave differently from
+  a random day &mdash; and does that hold up outside the data it was found in?</p>
+  <div class="findings">
+    <div class="finding"><h4>Short-term selling exhaustion is the core edge</h4>
+      <p>Most live signals buy a sharp intraday or daily drop at the point where selling has historically faded. Win rates run 68&ndash;85% with profit
+      factors of 2&ndash;9, profitable in both halves of 2016&ndash;2026 and on 12 ETFs the rules never saw.</p></div>
+    <div class="finding"><h4>One swing signal captures the big trends</h4>
+      <p>A 40-day breakout wins only 39% of the time, but winners average about 3&times; the losers. It beat random entries on SPY and QQQ in all three
+      eras since 1993, but not on sector ETFs or single stocks. That is why it is only traded on the two indexes.</p></div>
+    <div class="finding"><h4>Defined-risk spreads, with a tested stop</h4>
+      <p>Selling call spreads after short-term overbought closes won about 90% of the time from 1993 to 2026. A stop at the spread's midpoint, tested on 5-minute
+      data, removed every full loss without lowering the return.</p></div>
+    <div class="finding"><h4>Index effects don't carry over to constituents</h4>
+      <p>The trend breakout beat random entries on the S&amp;P 500 and Nasdaq-100 ETFs in every era since 1993. It showed no edge on the S&amp;P 500 sector ETFs
+      or on the 100 largest single stocks. The effect belongs to the index level, which is why the live signals trade only the index ETFs.</p></div>
+    <div class="finding"><h4>Most ideas fail, and the failures are recorded</h4>
+      <p>Key price levels, calendar effects, momentum rotation, overnight momentum and several intraday patterns were tested and rejected. Section 09 lists
+      them with the reason each failed.</p></div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="sec-num">02</div>
+  <h2>Method: the validation ladder</h2>
+  <p class="dek">A signal goes live only after it clears every step. Most candidates fail at step 4 or 5.</p>
+  <ol class="ladder">
+    <li><div><b>Point-in-time data</b><span>Signals use completed bars only. Volatility filters use the prior day's VIX. Signals decided "at the close" are
+      computed at 3:45 pm and checked against the real close: the estimate agreed 85&ndash;92% of the time and traded as well.</span></div></li>
+    <li><div><b>The real exit, with costs</b><span>Each trade is simulated with the exit rule the live alert uses (trailing stop, return to the average, stop-loss,
+      time limit), not a fixed holding period. Costs are 3 bp per round trip for ETFs, 5 bp for stocks and $0.01 per option leg.</span></div></li>
+    <li><div><b>Split-sample stability</b><span>Results must be positive in both halves of the test window. Daily rules are found on 1993&ndash;2009 and then
+      must hold on 2010&ndash;2026 unchanged.</span></div></li>
+    <li><div><b>Markets it never saw</b><span>The same rule, with no re-tuning, is run on 12 other ETFs: nine of the S&amp;P 500 Select Sector SPDRs (GICS sector
+      funds), plus the Dow, Russell 2000 and semiconductor ETFs. Daily rules are also run on the 100 largest U.S. stocks.</span></div></li>
+    <li><div><b>Beat a naive baseline</b><span>Each signal must beat random entry days with the same exit, or the same option spread opened every day. The
+      baseline removes the market's upward drift and the premium options normally carry.</span></div></li>
+    <li><div><b>A plateau, not a spike</b><span>Nearby settings and nearby bar sizes (5-minute to 4-hour) must also work. An edge that only appears at one exact
+      setting is treated as noise.</span></div></li>
+  </ol>
+  <p class="note">Option returns come from a Black-Scholes model. Implied volatility is the prior day's VIX (SPY) or VXN (QQQ), with a standard
+  index skew. Same-day options are calibrated so that buying an at-the-money straddle every day roughly breaks even, as it does in practice. These
+  are modeled prices, not broker fills.</p>
+</section>
+
+<section id="data">
+  <div class="sec-num">03</div>
+  <h2>Data &amp; engineering</h2>
+  <p class="dek">Where every number comes from, the conventions that keep it point-in-time, and the system that runs the signals live.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Dataset</th><th>Coverage</th><th>Source</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Daily OHLCV, SPY &amp; QQQ</td><td>1993&ndash; / 1999&ndash;</td><td>Yahoo Finance</td><td>Daily signals, long-history tests</td></tr>
+      <tr><td class="nm">Daily OHLCV, 12 sector &amp; index ETFs</td><td>1998&ndash;</td><td>Yahoo Finance</td><td>Out-of-universe validation</td></tr>
+      <tr><td class="nm">Daily OHLCV, 100 largest U.S. stocks</td><td>2000&ndash;</td><td>Yahoo Finance</td><td>Constituent validation, market breadth</td></tr>
+      <tr><td class="nm">Intraday bars (1- to 60-minute)</td><td>2016&ndash;</td><td>Alpaca (consolidated tape)</td><td>Intraday signals, stop tests, 3:45 pm estimates</td></tr>
+      <tr><td class="nm">Real-time 15-minute bars</td><td>live</td><td>Charles Schwab API</td><td>Production signals</td></tr>
+      <tr><td class="nm">VIX &amp; VXN closes</td><td>1990&ndash; / 2001&ndash;</td><td>FRED (Cboe indexes)</td><td>Volatility regimes, option pricing</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Point-in-time conventions</h3>
+  <ul class="plain">
+    <li><b>Completed bars only.</b> A signal on a bar is evaluated after the bar closes. Higher-timeframe context comes from the last bar <i>completed</i> by that moment.</li>
+    <li><b>Lagged volatility.</b> Volatility filters and option prices use the prior day's VIX or VXN close.</li>
+    <li><b>Wall-clock bar construction.</b> Multi-hour bars are cut on the exchange clock. This fixed a daylight-saving drift that had shifted 4-hour bars by an hour.</li>
+    <li><b>Close-based signals estimated at 3:45 pm.</b> The live system decides at 3:45 pm. The estimate was checked against the real close: it matched 85&ndash;92% of
+      signals and produced the same results.</li>
+    <li><b>Price adjustments.</b> Split- and dividend-adjusted history is used for research returns. Live rules that compare today's price with past levels,
+      such as a 40-day high, use unadjusted prices, because a dividend-adjusted high sits below the price actually traded. When two vendors adjusted the same
+      history differently, signals were rebuilt from a single source rather than mixed.</li>
+    <li><b>Vendor reconciliation.</b> Real-time Schwab bars report 15&ndash;25% less volume than the consolidated-tape history. Live volume is rescaled on the
+      overlapping bars, so volume-based rules keep the meaning they were tested with.</li>
+    <li><b>Known biases stated.</b> The stock universe is today's 100 largest companies (survivorship). It is used only as a pass/fail check, never to tune a rule.</li>
+  </ul>
+  <h3>Production system</h3>
+  <p>The signals run as a Python service: FastAPI, pandas and NumPy, deployed on Render. A scheduler fires each timeframe on the bar clock, merges Schwab real-time
+  bars into Alpaca history, keeps position state on persistent storage, removes duplicate alerts, and posts entries and exits to subscribers. Before any signal goes
+  live, its production code is replayed over years of history and must reproduce the research results: the latest additions matched 90% of research signals,
+  with the same win rates. Monitoring uses the service's health endpoint and its logs.</p>
+</section>
+
+<section id="book">
+  <div class="sec-num">04</div>
+  <h2>Strategy book</h2>
+  <p class="dek">All live signals, SPY and QQQ, mid-2016 to September 2026, traded as shares, figures per trade. The Trend Breakout was also tested back to 1993
+  (Section 07). Switch views for consistency and options.</p>
+  <div class="tabs" role="group" aria-label="Table view">
+    <button type="button" data-view="perf" aria-pressed="true">Performance</button>
+    <button type="button" data-view="cons" aria-pressed="false">Consistency</button>
+    <button type="button" data-view="opt" aria-pressed="false">Options</button>
+  </div>
+  <div class="table-scroll"><table id="book-table"><thead></thead><tbody></tbody></table></div>
+  <p class="note">Max drawdown assumes the whole account in every trade, one after another, which is deliberately conservative. Signals tagged
+  <span class="tag warm">high vol</span> switch on only when the prior day's VIX is 20 or higher. <span class="tag">add</span> fires only while another buy is open.
+  Shorts are always closed the same day, because every overnight version failed.</p>
+</section>
+
+<section id="options">
+  <div class="sec-num">05</div>
+  <h2>Implementing with options</h2>
+  <p class="dek">The best contract for each signal is in the Options view of the strategy book. The matrix below shows the full grid for the first five buy
+  signals: strike from 2% in the money to 2% out of the money, and expiry the same day, next day or in two days. Hover or tap a cell for all its numbers.</p>
+  <div class="controls">
+    <label>Signal <select id="om-alert"></select></label>
+    <label>Entries <select id="om-win"><option>all day</option><option>before 2pm</option></select></label>
+    <label>Show <select id="om-metric">
+      <option value="mean">average return</option><option value="wr">win rate</option><option value="med">median return</option>
+      <option value="pf">profit factor</option><option value="payoff">avg win / avg loss</option>
+      <option value="half">% losing half+</option><option value="zero">% expiring worthless</option><option value="n">trades</option></select></label>
+  </div>
+  <div class="table-scroll"><table id="om-table"><thead></thead><tbody></tbody></table></div>
+  <p class="note">In-the-money contracts trade some average return for reliability: fewer trades lose half their premium. Out-of-the-money calls show large
+  averages, but the typical trade expired worthless, and the model flatters them, so they are avoided. Premium stop-losses on bought options made
+  results worse; risk is controlled through position size and strike choice.</p>
+</section>
+
+<section id="spreads">
+  <div class="sec-num">06</div>
+  <h2>Defined-risk spreads</h2>
+  <p class="dek">Selling call spreads when the market is stretched upward. Results are a percentage of the capital at risk on each spread.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Setup</th><th>The trade</th><th>Per year</th><th>Win rate</th><th>Avg win / loss</th><th>Profit factor</th><th>Per spread</th><th>Record</th></tr></thead>
+    <tbody>
+      <tr><td><span class="nm">Overbought call spread</span><span class="what">Short-term overbought close. Sell a next-day call 1% above, buy the call 1% further.</span></td>
+          <td>1 day</td><td>41</td><td class="pos">90%</td><td>+11% / &minus;42%</td><td class="pos">2.6</td><td class="pos">+6.3%</td><td>1993&ndash;2026, 30 of 34 yrs</td></tr>
+      <tr><td><span class="nm">Overbought, 2-day</span><span class="what">Same strikes, two-day expiry: more premium.</span></td>
+          <td>2 days</td><td>39</td><td class="pos">85%</td><td>+20% / &minus;47%</td><td class="pos">2.5</td><td class="pos">+10.2%</td><td>1993&ndash;2026, 32 of 34 yrs</td></tr>
+      <tr><td><span class="nm">Bear-market rally</span> <span class="tag">new</span><span class="what">The overbought spread when the index is below its 200-day average, 2-day expiry.</span></td>
+          <td>2 days</td><td>6</td><td class="pos">83%</td><td class="dim">&ndash;</td><td class="pos">3.2</td><td class="pos">+19.1%</td><td>1993&ndash;2026, both halves</td></tr>
+      <tr><td><span class="nm">Rich-premium iron condor</span> <span class="tag">new</span><span class="what">Options pricing at least 1.6&times; the recent movement. Sell a 5-day call 3% above and put 3% below, 1% wings; stop at a short strike.</span></td>
+          <td>5 days</td><td>18</td><td class="pos">91%</td><td class="dim">&ndash;</td><td class="pos">2.6</td><td class="pos">+10.6%</td><td>1993&ndash;2026, 88% of yrs</td></tr>
+      <tr><td><span class="nm">Fear-rally call spread</span><span class="what">A rally while volatility is also rising. Sell a 5-day call 2% above, buy 3% above.</span></td>
+          <td>5 days</td><td>9</td><td class="pos">91%</td><td>+21% / &minus;68%</td><td class="pos">2.9</td><td class="pos">+12.5%</td><td>2016&ndash;2026, 10 of 11 yrs</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Cutting the full losses: which stop works?</h3>
+  <p class="dek">A credit spread's worst case is losing its whole width. Seven exit rules were replayed on 5-minute bars for the overbought spread, 2016&ndash;2026.
+  The winner: buy the spread back once price trades through the <b>midpoint between the two strikes</b>.</p>
+  <div class="chart-grid">
+    <figure class="chart"><figcaption><b>Average return per spread</b> &middot; 2-day expiry, % of risk</figcaption>
+      <svg id="ch-stop-avg" viewBox="0 0 480 230" role="img" aria-label="Average return per spread by stop rule"></svg></figure>
+    <figure class="chart"><figcaption><b>Trades losing 90%+ of risk</b> &middot; 2-day expiry</figcaption>
+      <svg id="ch-stop-full" viewBox="0 0 480 230" role="img" aria-label="Share of full losses by stop rule"></svg></figure>
+  </div>
+  <div class="table-scroll" style="margin-top:14px"><table>
+    <thead><tr><th>Exit rule (overbought spread)</th><th>Expiry</th><th>Win rate</th><th>Per spread</th><th>Avg loss</th><th>Profit factor</th><th>Full losses</th><th>Worst</th></tr></thead>
+    <tbody>
+      <tr><td>Hold to expiry</td><td>1 day</td><td>91%</td><td class="pos">+5.8%</td><td class="neg">&minus;46%</td><td>2.42</td><td>2.0%</td><td class="neg">&minus;100%</td></tr>
+      <tr><td class="nm">Midpoint stop</td><td>1 day</td><td>90%</td><td class="pos">+6.0%</td><td class="neg">&minus;38%</td><td class="pos">2.59</td><td class="pos">0.0%</td><td class="neg">&minus;85%</td></tr>
+      <tr><td>Hold to expiry</td><td>2 days</td><td>86%</td><td class="pos">+10.4%</td><td class="neg">&minus;55%</td><td>2.37</td><td>4.6%</td><td class="neg">&minus;100%</td></tr>
+      <tr><td class="nm">Midpoint stop</td><td>2 days</td><td>83%</td><td class="pos">+10.5%</td><td class="neg">&minus;37%</td><td class="pos">2.65</td><td class="pos">0.0%</td><td class="neg">&minus;72%</td></tr>
+      <tr><td>Stop at 2&times; the credit received</td><td>1 day</td><td>49%</td><td class="neg">&minus;0.7%</td><td class="neg">&minus;15%</td><td class="neg">0.91</td><td>0.0%</td><td class="neg">&minus;85%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">The common "stop at 2&times; the credit" rule turned a profitable setup into a losing one. Next-day spreads swing too much intraday, so
+  it stops out trades that would have expired worthless. A stop at the short strike cut losses too, but gave up more return than the midpoint. Only an overnight
+  gap through both strikes can still cause a large loss. The live alert now shows the midpoint stop level.</p>
+</section>
+
+<section id="robust">
+  <div class="sec-num">07</div>
+  <h2>Robustness</h2>
+  <h3>The same rule on every bar size</h3>
+  <p class="dek">Each rule, unchanged, on every bar size from 5 minutes to 4 hours. Profit factor, SPY and QQQ, 2016&ndash;2026. Green = held in both halves and on 12 other
+  ETFs; &#9679; = traded live.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Signal</th><th>5m</th><th>10m</th><th>15m</th><th>20m</th><th>30m</th><th>45m</th><th>1h</th><th>90m</th><th>2h</th><th>3h</th><th>4h</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">Fear-Rally Short</td><td class="neg">1.25</td><td class="neg">1.19</td><td class="pos">2.0 &#9679;</td><td class="pos">2.3</td><td class="pos">2.6 &#9679;</td><td class="dim">2.4 &middot; rare</td><td class="dim">3.3 &middot; rare</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td><td class="dim">rare</td></tr>
+      <tr><td class="nm">Reversal Buy</td><td class="neg">0.95</td><td class="neg">1.09</td><td class="neg">1.29</td><td class="neg">1.43</td><td class="pos">2.4 &#9679;</td><td class="pos">3.2 &#9679;</td><td class="pos">3.9 &#9679;</td><td class="pos">1.8</td><td class="neg">0.66</td><td class="neg">0.77</td><td class="neg">1.09</td></tr>
+      <tr><td class="nm">Reversal Buy + 4-hour oversold</td><td class="neg">0.86</td><td class="neg">1.16</td><td class="dim">2.5 &middot; weak early</td><td class="dim">1.95 &middot; weak early</td><td class="pos">4.8 &#9679;</td><td class="pos">9.1 &#9679;</td><td class="pos">19 &#9679;</td><td class="pos">1.5</td><td class="neg">0.63</td><td class="neg">0.87</td><td class="dim">3.3 &middot; weak on ETFs</td></tr>
+      <tr><td class="nm">Trend Bounce</td><td class="dim">&ndash;</td><td class="neg">1.24</td><td class="pos">1.6 &middot; thin</td><td class="pos">1.5 &middot; thin</td><td class="dim">1.4</td><td class="pos">1.6 &middot; thin</td><td class="pos">2.4 &#9679;</td><td class="pos">2.3</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td><td class="dim">&ndash;</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Each signal works across a continuous band of neighbouring bar sizes and fails outside it. That is what a real effect looks like, rather than a lucky
+  setting. "Rare" = fewer than 15 trades in ten years; "thin" = holds up, but the average trade is too small to clear costs.</p>
+
+  <h3>When two timeframes agree</h3>
+  <p class="dek">Live signals split by what the next-larger chart was doing at that moment, read from its last completed bar. The live alerts flag these as size-up signals.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Signal</th><th>Trades</th><th>Win rate</th><th>Profit factor</th><th>Per trade</th><th>2016&ndash;21</th><th>2021&ndash;26</th><th>12 other ETFs</th></tr></thead>
+    <tbody>
+      <tr><td>1-hour Reversal, 4-hour also oversold</td><td>60</td><td class="pos">90%</td><td class="pos">17</td><td class="pos">+1.05%</td><td class="pos">+1.01%</td><td class="pos">+1.09%</td><td class="pos">PF 1.9</td></tr>
+      <tr><td>1-hour Reversal, 4-hour not oversold</td><td>103</td><td>80%</td><td>1.8</td><td class="pos">+0.19%</td><td class="pos">+0.17%</td><td class="pos">+0.20%</td><td class="dim">&ndash;</td></tr>
+      <tr><td>45-min Reversal, 4-hour also oversold</td><td>59</td><td class="pos">83%</td><td class="pos">8.7</td><td class="pos">+0.65%</td><td class="pos">+0.69%</td><td class="pos">+0.61%</td><td class="pos">PF 2.3</td></tr>
+      <tr><td>30-min Reversal, 4-hour also oversold</td><td>60</td><td class="pos">80%</td><td class="pos">5.4</td><td class="pos">+0.52%</td><td class="pos">+0.48%</td><td class="pos">+0.55%</td><td class="pos">PF 1.65</td></tr>
+      <tr><td>15-min Fear-Rally Short, 1-hour also stretched</td><td>102</td><td>56%</td><td class="pos">2.25</td><td class="pos">+0.17%</td><td class="pos">+0.15%</td><td class="pos">+0.18%</td><td class="pos">PF 1.4</td></tr>
+      <tr><td>30-min Fear-Rally Short, 1-hour also stretched</td><td>24</td><td>67%</td><td class="pos">3.5</td><td class="pos">+0.23%</td><td class="pos">+0.16%</td><td class="pos">+0.33%</td><td class="pos">PF 1.7</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>33 years of the daily signals</h3>
+  <p class="dek">Daily-bar signals can be tested much further back than intraday ones. Cumulative results, SPY since 1993 and QQQ since 1999, one position at a time.</p>
+  <div class="chart-grid">
+    <figure class="chart"><figcaption><b>Trend Breakout</b> &middot; cumulative R (1R = the risk to the stop)</figcaption>
+      <svg id="ch-tb" viewBox="0 0 480 250" role="img" aria-label="Trend breakout cumulative R 1993 to 2026"></svg>
+      <div class="legend"><span><i style="background:var(--chart-1)"></i>Signal</span></div></figure>
+    <figure class="chart"><figcaption><b>Overbought call spread</b> &middot; cumulative return on risk (1.0 = one spread's max loss)</figcaption>
+      <svg id="ch-ob" viewBox="0 0 480 250" role="img" aria-label="Overbought call spread cumulative return 1993 to 2026"></svg>
+      <div class="legend"><span><i style="background:var(--chart-1)"></i>Signal</span><span><i style="background:var(--chart-2)"></i>Same spread sold on ordinary days, same count</span></div></figure>
+  </div>
+  <p class="note">Trend Breakout: 229 trades, 39% win rate, profit factor 2.1, +0.66R per trade against +0.37R for random entries with the same stop and exit.
+  Positive in 1993&ndash;2007, 2008&ndash;15 and 2016&ndash;26. Every breakout length from 30 to 100 days and every stop from 1.25 to 2 times the daily range gave +0.6 to +0.8R.</p>
+</section>
+
+<section id="pipeline">
+  <div class="sec-num">08</div>
+  <h2>Daily signals in depth</h2>
+  <p class="dek">The newest live signals and spreads, with the evidence behind them.</p>
+  <h3>The three washout patterns behind the Daily Bounce Buy</h3>
+  <p class="dek">Buy at the close after a daily washout and sell at the first up close, three days at most. The patterns were found on 1993&ndash;2009 among 945
+  rule/exit combinations. Each held on 2010&ndash;2026, on 12 ETFs and on the 100 largest stocks. The live alert fires on any of them, plus a fourth,
+  milder oversold pattern: 517 trades since 1993, 79% win rate, profit factor 2.8. The live code, replayed on 2017&ndash;2026, matched 90% of the signals.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Candidate</th><th>Per year</th><th>Win rate</th><th>Avg win</th><th>Avg loss</th><th>Profit factor</th><th>Per trade</th><th>Random days</th><th>Years +</th><th>12 ETFs</th><th>100 stocks</th></tr></thead>
+    <tbody>
+      <tr><td><span class="nm">Deep stretch in a fearful market</span><span class="what">Far below the 20-day range while volatility is high.</span></td>
+          <td>4</td><td class="pos">84%</td><td class="pos">+2.41%</td><td class="neg">&minus;3.85%</td><td class="pos">3.3</td><td class="pos">+1.41%</td><td class="dim">+0.11%</td><td>90%</td><td class="pos">PF 1.9</td><td class="pos">PF 1.8</td></tr>
+      <tr><td><span class="nm">Losing streak with a gap lower</span><span class="what">Several down days in a row, then an open below the prior low.</span></td>
+          <td>4</td><td class="pos">85%</td><td class="pos">+1.45%</td><td class="neg">&minus;2.18%</td><td class="pos">3.8</td><td class="pos">+0.90%</td><td class="dim">+0.11%</td><td>91%</td><td class="pos">PF 1.7</td><td class="pos">PF 1.5</td></tr>
+      <tr><td><span class="nm">Short-term oversold, elevated volatility</span><span class="what">A very oversold 2-day momentum reading when VIX is 20+.</span></td>
+          <td>7</td><td class="pos">80%</td><td class="pos">+1.96%</td><td class="neg">&minus;2.72%</td><td class="pos">2.8</td><td class="pos">+1.01%</td><td class="dim">+0.05%</td><td>96%</td><td class="pos">PF 1.7</td><td class="pos">PF 1.5</td></tr>
+    </tbody>
+  </table></div>
+  <div class="chart-grid" style="margin-top:14px">
+    <figure class="chart"><figcaption><b>Daily bounce candidates</b> &middot; cumulative % (sum of per-trade returns), SPY + QQQ</figcaption>
+      <svg id="ch-bn" viewBox="0 0 480 250" role="img" aria-label="Daily bounce candidates cumulative return"></svg>
+      <div class="legend"><span><i style="background:var(--chart-1)"></i>Deep stretch, fearful market</span><span><i style="background:var(--chart-3)"></i>Losing streak with a gap lower</span></div></figure>
+    <div class="callout" style="margin:0;align-self:start"><p><b>Overlap with the Weak-Day Buy.</b> About 60% of the "fearful market" signal days are also Weak-Day Buy days.
+      On the other days the patterns still averaged +0.8 to +1.0% per trade, so both alerts run, and the alert says not to double up. The 3:45 pm estimate caught 85&ndash;100%
+      of the real signals. The oversold-volatility candidate traded less well on the estimate for SPY (+0.45% against +0.55% on the real close).</p></div>
+  </div>
+
+  <h3>New spread structures</h3>
+  <p class="dek">Each structure is compared with the same structure opened on every day. Defined risk throughout. Two passed stress tests (realistic costs,
+  flat vs skewed pricing, options 15% cheaper or richer, nearby settings) and are now live. The put spread was rejected.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Idea</th><th>Per year</th><th>Win rate</th><th>Per trade (of risk)</th><th>Profit factor</th><th>Full losses</th><th>Every-day version</th></tr></thead>
+    <tbody>
+      <tr><td><span class="nm">Bull call debit spread after a washout</span> <span class="tag">live option</span><span class="what">Buy the at-the-money call, sell the call 2% above, 5-day expiry, sell at the first up close.</span></td>
+          <td>4</td><td class="pos">78%</td><td class="pos">+13.9%</td><td class="pos">2.3</td><td>3.8%</td><td class="neg">&minus;5.8%</td></tr>
+      <tr><td><span class="nm">Rich-premium iron condor</span> <span class="tag">live</span><span class="what">Implied volatility at least 1.6&times; the recent realized volatility; short strikes &plusmn;3%, 5-day expiry.</span></td>
+          <td>18</td><td class="pos">91%</td><td class="pos">+10.6%</td><td class="pos">2.6</td><td>4.5%</td><td>+6.6%, PF 1.5</td></tr>
+      <tr><td><span class="nm">Put credit spread after a losing streak</span> <span class="tag res">rejected</span><span class="what">Sell a 5-day put 3% below, 1% wide.</span></td>
+          <td>4</td><td class="pos">92%</td><td class="pos">+7.0%</td><td class="pos">2.1</td><td>5.1%</td><td>+3.2%, PF 1.5</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Spreads opened on every day show a profit in the model because index options usually price in more movement than happens. This premium is real,
+  but the model's $0.01-per-leg cost is optimistic. The comparison that matters is the signal against its every-day version. Iron condors in high-VIX
+  markets had a 25&ndash;38% full-loss rate and were rejected.</p>
+</section>
+
+<section id="failed">
+  <div class="sec-num">09</div>
+  <h2>What failed</h2>
+  <p class="dek">A research log of ideas that were tested and rejected, and why. Ideas that fail are a normal part of the process.</p>
+  <ul class="log">
+    <li><b>Key price levels &amp; volume profile</b><span>Price action around major daily levels was no better than around randomly placed placebo levels.</span></li>
+    <li><b>Breakouts on sector ETFs and single stocks</b><span>The 40-day breakout matched random entries on 12 ETFs and 100 stocks. Its edge is specific to the broad indexes.</span></li>
+    <li><b>Short breakdowns, squeezes, opening-range and gap-and-go</b><span>No version produced the targeted 50/50, 3&ndash;5&times; payoff profile out of sample.</span></li>
+    <li><b>4-hour divergence and daily reversal buys</b><span>Strong on SPY/QQQ but failed the 12-ETF check (4-hour), or lost money 1999&ndash;2026 (daily).</span></li>
+    <li><b>Put spreads on weak days</b><span>Profitable after 2016 but lost money from 1993 to 2015, so they were rejected despite the attractive recent record.</span></li>
+    <li><b>"2&times; credit" spread stop</b><span>Turned a profit factor of 2.4 into 0.9 on next-day spreads, because intraday swings stop out eventual winners.</span></li>
+    <li><b>Sector momentum &amp; relative-strength rotation</b><span>Dual momentum, relative-strength breakouts and relative-value rotation all came in at or below buy-and-hold on a
+      risk-adjusted basis; the market-neutral version earned about zero.</span></li>
+    <li><b>Overnight-return momentum</b><span>It looked strong but was mostly market exposure. Hedged, it lost about 2% a year.</span></li>
+    <li><b>Calendar, holiday and lunar effects</b><span>None passed a permutation test (Appendix).</span></li>
+    <li><b>Six weaker live alerts retired</b><span>In September 2026 the six weakest or most redundant signals were cut to keep the alert set small and high quality.</span></li>
+  </ul>
+</section>
+
+<section id="changes">
+  <div class="sec-num">10</div>
+  <h2>Change log</h2>
+  <p class="dek">Every change to the live rule set is dated and justified. No rule changes because of a single recent result; each change follows a test that anyone
+  with the same data could repeat.</p>
+  <ul class="log">
+    <li><b>30 Sep 2026 &middot; Added</b><span>Trend Breakout (swing), Daily Bounce Buy and the rich-premium iron condor. Each passed the full validation ladder, and its
+      production code reproduced the research signals before launch.</span></li>
+    <li><b>30 Sep 2026 &middot; Amended</b><span>Overbought call spread: midpoint stop added after seven exit rules were compared on 5-minute data. It removed every full loss
+      with no loss of return.</span></li>
+    <li><b>28 Sep 2026 &middot; Retired</b><span>Six signals (30-minute divergence and pullback, 90-minute reversal, 1-hour fear-rally short, quiet dip, single-stock trend dip),
+      as the weakest or most redundant. Open positions kept receiving their exits.</span></li>
+    <li><b>28 Sep 2026 &middot; Corrected</b><span>4-hour, 90-minute and 45-minute bars are now cut on the exchange clock, after a daylight-saving drift was found. Re-tested on the
+      corrected bars, the 4-hour divergence failed the ETF check and was removed.</span></li>
+    <li><b>28 Sep 2026 &middot; Added</b><span>Defined-risk call-spread setups, published to a separate channel, with 33 years of history behind them.</span></li>
+    <li><b>27 Sep 2026 &middot; Rebuilt</b><span>Intraday rule set rebuilt around the actual live exits. The two plain buy grades (profit factor about 1.5) were removed.</span></li>
+  </ul>
+</section>
+
+<section id="limits">
+  <div class="sec-num">11</div>
+  <h2>Limitations</h2>
+  <ul class="plain">
+    <li><b>Modeled option prices.</b> Options and spreads are priced from index volatility with a standard skew, not historical quotes. Real bid-ask spreads,
+      especially on short-dated contracts, would reduce returns.</li>
+    <li><b>Multiple testing.</b> Thousands of rules were screened. Split samples, untouched ETFs, random baselines and parameter plateaus guard against this, but
+      the reported numbers for the chosen rules are still likely somewhat optimistic.</li>
+    <li><b>Survivorship.</b> The stock universe is today's 100 largest companies, which flatters results on stocks. Stocks are only used as a pass/fail check.
+      The proper fix is point-in-time index membership, meaning the constituents as they stood on each date, including deletions.</li>
+    <li><b>Regime dependence.</b> Several signals are active only in high-volatility markets and can go quiet for weeks. About 38% of days have any alert.</li>
+    <li><b>Correlation between signals.</b> Many buys fire in the same selloffs. Results are per signal, not a combined portfolio.</li>
+    <li><b>Intraday history starts in 2016.</b> Intraday signals have ten years of data; daily ones have 33.</li>
+  </ul>
+</section>
+
+<section id="appendix">
+  <div class="sec-num">12</div>
+  <h2>Appendix: market background</h2>
+  <p class="dek">Not signals. Background on when the market has tended to move, and which popular calendar ideas hold up.</p>
+
+  <h3>Seasonality</h3>
+  <figure class="chart"><figcaption><b>SPY average return by calendar month</b> &middot; 19 years</figcaption>
+    <svg id="chart-spy-months" viewBox="0 0 780 220" role="img" aria-label="SPY average return by month"></svg></figure>
+  <p class="note">September is the only reliably negative month. April, May, July and November are the strongest (up in 75&ndash;80% of years).</p>
+
+  <h3>Sector rotation</h3>
+  <p class="dek">A long-term model that rotates into lagging sectors once they start recovering. It was the only long-term strategy tested that beat holding SPY on both
+  return and risk, in both halves of 2000&ndash;2024.</p>
+  <div class="stats">
+    <div><span class="v pos">+10.2%</span><span class="k">yearly return (SPY +7.7%)</span></div>
+    <div><span class="v">0.72</span><span class="k">Sharpe ratio (SPY 0.48)</span></div>
+    <div><span class="v neg">&minus;36%</span><span class="k">worst drawdown (SPY &minus;55%)</span></div>
+  </div>
+  <div class="table-scroll"><table class="heat"><tbody id="sector-heatmap-body"></tbody></table></div>
+  <p class="note">Average monthly return by sector ETF (S&amp;P 500 Select Sector SPDRs and industry ETFs), 2005&ndash;2024. This is a map, not a signal: picking each sector's "best month" did no better than random.</p>
+
+  <h3>Calendar &amp; overnight events</h3>
+  <figure class="chart"><figcaption><b>SPY held overnight into each event</b> &middot; Sharpe ratio, 2013&ndash;2024</figcaption>
+    <svg id="chart-calendar" viewBox="0 0 780 220" role="img" aria-label="Overnight event Sharpe ratios"></svg></figure>
+  <div class="table-scroll" style="margin-top:12px"><table>
+    <thead><tr><th>Event (SPY, overnight)</th><th>Per year</th><th>Avg per night</th><th>Nights up</th><th>Years positive</th></tr></thead>
+    <tbody>
+      <tr><td>Night after a sharp selloff</td><td>22</td><td class="pos">+0.17%</td><td>64%</td><td class="pos">100%</td></tr>
+      <tr><td>Fed decision eve, market already soft</td><td>2</td><td class="pos">+0.35%</td><td>&mdash;</td><td class="pos">92%</td></tr>
+      <tr><td>Fed decision eve</td><td>8</td><td class="pos">+0.15%</td><td>67%</td><td>75%</td></tr>
+      <tr><td>Two nights before a Fed decision</td><td>8</td><td class="pos">+0.20%</td><td>61%</td><td class="pos">92%</td></tr>
+      <tr><td>First night of the month</td><td>12</td><td class="pos">+0.12%</td><td>67%</td><td>67%</td></tr>
+      <tr><td>Turn of the month (last 3 + first 2 nights)</td><td>60</td><td>+0.04%</td><td>57%</td><td>83%</td></tr>
+      <tr><td>Night after the Fed decision</td><td>8</td><td class="neg">&minus;0.14%</td><td>51%</td><td>50%</td></tr>
+      <tr><td>Jobs report eve</td><td>11</td><td>+0.02%</td><td>60%</td><td>58%</td></tr>
+      <tr><td>Monthly options expiration eve</td><td>12</td><td>+0.04%</td><td>54%</td><td>58%</td></tr>
+      <tr><td>Quarterly "triple witching" eve</td><td>4</td><td>0.00%</td><td>53%</td><td>58%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Holding SPY every night averaged +0.04% over this period, so the Fed-eve and post-selloff nights stand out. The edges are small per night and fade quickly
+  after costs.</p>
+
+  <h3>Calendar ideas that don't hold up</h3>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Idea (SPY)</th><th>Sample</th><th>Avg return</th><th>Win rate</th><th>Chance it's luck</th></tr></thead>
+    <tbody>
+      <tr><td>Rosh Hashanah (eve &rarr; day)</td><td>20</td><td>+0.04%</td><td>45%</td><td>88%</td></tr>
+      <tr><td>Yom Kippur (eve &rarr; day)</td><td>20</td><td>+0.15%</td><td>55%</td><td>57%</td></tr>
+      <tr><td>Passover (eve &rarr; first day)</td><td>20</td><td>+0.40%</td><td>70%</td><td>12%</td></tr>
+      <tr><td>Hanukkah (eve &rarr; first night)</td><td>20</td><td>+0.25%</td><td>60%</td><td>33%</td></tr>
+      <tr><td>Days near a new moon</td><td>706</td><td>+0.08%/day (others +0.03%)</td><td>57%</td><td>18%</td></tr>
+      <tr><td>Days near a full moon</td><td>697</td><td>+0.08%/day (others +0.03%)</td><td>54%</td><td>23%</td></tr>
+      <tr><td>Santa Claus rally (overnight)</td><td>77</td><td class="neg">&minus;0.02%/night</td><td>62%</td><td>not significant</td></tr>
+      <tr><td>Buying before a holiday, selling after</td><td>106</td><td class="neg">&minus;0.02%</td><td>52%</td><td>not significant</td></tr>
+      <tr><td>Last / first night of the year</td><td>12 each</td><td class="neg">&minus;0.10%</td><td>42&ndash;64%</td><td>not significant</td></tr>
+      <tr><td>Each sector's "best month" of the year</td><td>20 years</td><td>&mdash;</td><td>&mdash;</td><td>55&ndash;86% (random-like)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">"Chance it's luck" is the share of random samples of the same size that did at least this well (a permutation test). Below 5% would count as real.</p>
+
+  <h3>Correlations worth knowing</h3>
+  <ul class="plain">
+    <li><b>Fear spikes mean-revert.</b> After SPY falls more than the options market implied for the day, the next five days have averaged +0.45%, about double the normal +0.23%.</li>
+    <li><b>Broad selloffs bounce better than narrow ones.</b> Dip-buys taken when most of the largest stocks were below their own average did markedly better.</li>
+    <li><b>Bond yields lead gold miners by about three months.</b> Rising 10-year yields were followed by weaker gold miners 10&ndash;13 weeks later (correlation &minus;0.17).</li>
+    <li><b>The Fed's balance sheet tracked stocks, then stopped.</b> The link with six-month SPY returns (+0.25) disappeared out of sample; it was mostly a quantitative-easing-era effect.</li>
+  </ul>
+
+  <h3>Glossary</h3>
+  <dl class="gloss">
+    <dt>Win rate</dt><dd>Share of trades that made money after costs.</dd>
+    <dt>Profit factor</dt><dd>Gross profits divided by gross losses. 1.0 breaks even; above 2 is strong.</dd>
+    <dt>Per trade</dt><dd>Average return per trade after costs, winners and losers together.</dd>
+    <dt>R</dt><dd>Profit measured in units of the risk taken. A trade risking 2% that gains 6% made 3R.</dd>
+    <dt>Return on risk</dt><dd>For spreads: profit divided by the maximum possible loss of the spread.</dd>
+    <dt>Max drawdown</dt><dd>Largest peak-to-trough fall of the equity curve, assuming the whole account in each trade in sequence.</dd>
+    <dt>In / at / out of the money</dt><dd>A call's strike below / at / above the current price. In-the-money options cost more but move more like the shares.</dd>
+    <dt>Implied vs realized volatility</dt><dd>The movement option prices expect versus the movement that actually occurred recently.</dd>
+    <dt>Baseline</dt><dd>The same trade taken on random or ordinary days. A signal must beat it.</dd>
+  </dl>
+</section>
+
+<section id="about">
+  <div class="sec-num">13</div>
+  <h2>About the author</h2>
+  <p><b>Richard Pagano</b> designed and built every part of this project: the rule-based methodologies, the point-in-time data pipeline, the backtesting and validation
+  framework, the option-pricing model and the production service that runs the signals daily. The work is written the way an index methodology is written: every
+  signal is a fixed rule applied mechanically, every input is documented, and every change is dated and justified in the change log.</p>
+</section>
+
+<footer>
+  <p><b>Independence.</b> This is independent research. It is not affiliated with, sponsored by or endorsed by S&amp;P Dow Jones Indices, Nasdaq, Cboe or any
+  fund sponsor. S&amp;P 500 is a registered trademark of S&amp;P Dow Jones Indices LLC; Nasdaq-100 is a registered trademark of Nasdaq, Inc.; VIX is a
+  trademark of Cboe Exchange, Inc.</p>
+  <p><b>About this research.</b> All results are historical simulations on SPY and QQQ data with the rules fixed in advance; the signals now run as live alerts. Option
+  results are modeled, not broker fills. Past results do not guarantee future returns. This is research, not investment advice.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+
+  /* ---------------- strategy book ---------------- */
+  const G = {
+    dip:  'Intraday dip buying',
+    close:'Into the close & overnight',
+    swing:'Swing (weeks)',
+    short:'Same-day shorts'
+  };
+  // [group, name, tags, what, perf[7], cons[5], opt[4]]
+  const S = [
+    ['dip','STRONG BUY · divergence confirmed',['add'],'Adds to an open buy when a longer divergence confirms the low.',
+      ['6','85%','+0.86%','−0.52%','9.4','+0.66%','−1.7%'],['+0.76%','+0.58%','82%','2','hours'],['shares, added to the open position','–','–','–']],
+    ['dip','15-min Divergence Buy',[],'A fresh short-term low while the selling is already fading.',
+      ['7','85%','+0.55%','−0.50%','6.3','+0.39%','−2.5%'],['+0.45%','+0.35%','100%','3','~11 hours'],['next-day, at the money','78%','+33%','16%']],
+    ['dip','1-hour Trend Dip Buy',[],'A deep hourly dip while the daily and weekly trend are turning up.',
+      ['10','74%','+1.14%','−1.03%','3.1','+0.57%','−4.0%'],['+0.59%','+0.56%','91%','3','~3 days'],['same-day, at the money (before 2 pm)','47%','+48%','38%']],
+    ['dip','1-hour Divergence Buy',['high vol'],'The hourly divergence, in high-volatility markets only.',
+      ['5','83%','+2.15%','−1.67%','6.4','+1.52%','−10.6%'],['+1.19%','+1.84%','88%','2','~2.5 days'],['next-day, 1% in the money','75%','+99%','8%']],
+    ['dip','1-hour Breadth Buy',['high vol'],'A new low while fewer of the largest stocks are still falling.',
+      ['9','72%','+1.93%','−1.47%','3.3','+0.97%','−7.3%'],['+1.13%','+0.87%','100%','3','~3 days'],['same-day, at the money','45%','+118%','49%']],
+    ['dip','1-hour Pullback Buy',['high vol'],'The first pullback after a strong run-up, bought as price turns back up.',
+      ['23','70%','+1.22%','−1.20%','2.4','+0.49%','−11.4%'],['+0.48%','+0.51%','80%','6','~2.5 days'],['best as shares; same-day, 1% in the money','61%','+13%','16%']],
+    ['dip','30-min Reversal Buy',[],'A sharp drop that snaps back above the prior bar’s high.',
+      ['27','75%','+0.51%','−0.64%','2.4','+0.22%','−6.4%'],['+0.11%','+0.35%','91%','4','~1 day'],['best as shares; next-day, 1% in the money','69%','+10%','14%']],
+    ['dip','45-min Reversal Buy',[],'The same snap-back on 45-minute bars.',
+      ['20','81%','+0.63%','−0.85%','3.2','+0.35%','−5.1%'],['+0.28%','+0.43%','100%','3','~1 day'],['best as shares; next-day, 1% in the money','68%','+12%','14%']],
+    ['dip','1-hour Reversal Buy',[],'The same snap-back on hourly bars.',
+      ['16','83%','+0.81%','−1.04%','3.9','+0.50%','−4.5%'],['+0.49%','+0.52%','100%','3','~1 day'],['best as shares; next-day, 1% in the money','67%','+16%','19%']],
+    ['dip','1-hour Trend Bounce',[],'A pullback to a fast-rising average in a daily uptrend.',
+      ['14','78%','+0.63%','−0.92%','2.4','+0.29%','−4.5%'],['+0.30%','+0.28%','82%','4','~2 days'],['shares only','–','–','–']],
+    ['dip','30-min Morning Dip Buy',['high vol'],'A first-hour dip while the 4-hour chart is oversold.',
+      ['46','68%','+0.64%','−0.67%','2.0','+0.21%','−16.8%'],['+0.26%','+0.18%','100%','5','hours'],['shares, or same-day at the money','51%','+22%','30%']],
+    ['close','Big-Day Buy (2:30 pm)',[],'Up 2%+ on the day by 2:30 pm: buy, sell at the close.',
+      ['17','60%','+0.59%','−0.39%','2.3','+0.20%','−10.2%'],['+0.28%','+0.13%','64%','12','same day'],['same-day, 0.5% in the money','55%','+35%','16%']],
+    ['close','15-min Gap-Down Buy',[],'Last-hour weakness on a gap-down day with the hourly chart oversold.',
+      ['51','81%','+0.41%','−0.90%','2.0','+0.16%','−11.8%'],['+0.21%','+0.13%','100%','4','overnight'],['best as shares; 2-day, 1% in the money','76%','+7%','6%']],
+    ['close','Weak-Day Buy (3:45 pm)',['high vol'],'A volatile day closing near its low: buy the close, sell on the first up day.',
+      ['20','76%','+2.14%','−2.62%','2.6','+1.00%','−21.1%'],['+1.29%','+0.74%','90%','6','1–3 days'],['7- to 10-day, at the money','66%','+21%','14–21%']],
+    ['close','Daily Bounce Buy (3:45 pm)',['new'],'A daily washout: buy the close, sell at the close of the first up day (3 days at most).',
+      ['16','85%','+1.44%','−1.94%','4.1','+0.92%','−13.5%'],['+1.23%','+0.72%','100%','3','1–3 days'],['5-day call, at the money (or a call debit spread)','75%','+37%','11%']],
+    ['swing','Trend Breakout (3:45 pm)',['new'],'A close at a 40-day high: buy with a stop below, ride the trend until it breaks.',
+      ['9','41%','+6.75%','−1.86%','2.5','+1.68%','−22.1%'],['+2.10%','+1.32%','82%','10','~1 month'],['best as shares; ~3-month, 5% in the money','36%','+13%','0%']],
+    ['short','15-min Fear-Rally Short',[],'A stretched rally while fear (VIX futures) is also rising. Covered at the close.',
+      ['12','55%','+0.49%','−0.30%','2.0','+0.14%','−3.4%'],['+0.14%','+0.13%','64%','10','same day'],['next-day put, at the money, sold at the close','48%','+22%','11%']],
+    ['short','30-min Fear-Rally Short',[],'The same warning on 30-minute bars. Rare.',
+      ['2.6','59%','+0.49%','−0.28%','2.6','+0.18%','−1.9%'],['+0.12%','+0.24%','80%','4','same day'],['next-day put, at the money, sold at the close','59%','+37%','7%']]
+  ];
+  const HEAD = {
+    perf:['Trades / yr','Win rate','Avg win','Avg loss','Profit factor','Per trade','Max drawdown'],
+    cons:['2016–21','2021–26','Years profitable','Longest losing streak','Typical hold'],
+    opt: ['Suggested contract','Win rate','Avg per trade','Trades losing half+']
+  };
+  const IDX = {perf:4, cons:5, opt:6};
+  const cls = (v, col, view) => {
+    if (v === '–') return 'dim';
+    if (view === 'perf' && col === 4) return parseFloat(v) >= 3 ? 'pos' : '';
+    if (v[0] === '+') return 'pos';
+    if (v[0] === '−') return 'neg';
+    return '';
+  };
+  const tagHtml = t => '<span class="tag' + (t === 'high vol' ? ' warm' : '') + '">' + t + '</span>';
+  function renderBook(view){
+    const cols = HEAD[view];
+    $('book-table').querySelector('thead').innerHTML = '<tr><th>Signal</th>' + cols.map(c => '<th>' + c + '</th>').join('') + '</tr>';
+    let html = '';
+    Object.keys(G).forEach(g => {
+      const rows = S.filter(r => r[0] === g);
+      html += '<tr class="grp"><td colspan="' + (cols.length + 1) + '">' + G[g] + ' &middot; ' + rows.length + '</td></tr>';
+      rows.forEach(r => {
+        const vals = r[IDX[view]];
+        html += '<tr><td><span class="nm">' + r[1] + '</span>' + r[2].map(tagHtml).join('') + '<span class="what">' + r[3] + '</span></td>' +
+          vals.map((v, i) => '<td class="' + cls(v, i, view) + '"' + (view === 'opt' && i === 0 ? ' style="text-align:left;white-space:normal;min-width:190px"' : '') + '>' + v + '</td>').join('') + '</tr>';
+      });
+    });
+    $('book-table').querySelector('tbody').innerHTML = html;
+  }
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderBook(b.dataset.view);
+  }));
+  renderBook('perf');
+
+  /* ---------------- options matrix ---------------- */
+  const M = [{"alert":"15-min Divergence Buy","strike":"2% ITM","dte":0,"window":"all day","n":70,"wr":77.1,"aw":25.3,"al":-22.2,"payoff":1.1,"pf":3.8,"mean":14.4,"med":15.2,"half":1.4,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"2% ITM","dte":0,"window":"before 2pm","n":67,"wr":76.1,"aw":26.0,"al":-22.2,"payoff":1.2,"pf":3.7,"mean":14.5,"med":14.6,"half":1.5,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"2% ITM","dte":1,"window":"all day","n":73,"wr":83.6,"aw":23.8,"al":-24.3,"payoff":1.0,"pf":5.0,"mean":15.9,"med":16.7,"half":4.1,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"2% ITM","dte":1,"window":"before 2pm","n":67,"wr":85.1,"aw":24.1,"al":-28.4,"payoff":0.8,"pf":4.8,"mean":16.3,"med":16.8,"half":4.5,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"2% ITM","dte":2,"window":"all day","n":73,"wr":83.6,"aw":20.3,"al":-22.2,"payoff":0.9,"pf":4.6,"mean":13.3,"med":15.5,"half":1.4,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"2% ITM","dte":2,"window":"before 2pm","n":67,"wr":85.1,"aw":20.6,"al":-25.6,"payoff":0.8,"pf":4.6,"mean":13.7,"med":15.8,"half":1.5,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"1% ITM","dte":0,"window":"all day","n":70,"wr":77.1,"aw":47.0,"al":-46.7,"payoff":1.0,"pf":3.4,"mean":25.6,"med":32.0,"half":10.0,"zero":1.4},{"alert":"15-min Divergence Buy","strike":"1% ITM","dte":0,"window":"before 2pm","n":67,"wr":76.1,"aw":48.2,"al":-46.7,"payoff":1.0,"pf":3.3,"mean":25.5,"med":30.6,"half":10.4,"zero":1.5},{"alert":"15-min Divergence Buy","strike":"1% ITM","dte":1,"window":"all day","n":73,"wr":83.6,"aw":35.7,"al":-43.9,"payoff":0.8,"pf":4.1,"mean":22.6,"med":24.8,"half":5.5,"zero":1.4},{"alert":"15-min Divergence Buy","strike":"1% ITM","dte":1,"window":"before 2pm","n":67,"wr":85.1,"aw":36.3,"al":-49.9,"payoff":0.7,"pf":4.2,"mean":23.5,"med":27.8,"half":6.0,"zero":1.5},{"alert":"15-min Divergence Buy","strike":"1% ITM","dte":2,"window":"all day","n":73,"wr":82.2,"aw":27.4,"al":-30.5,"payoff":0.9,"pf":4.2,"mean":17.1,"med":19.7,"half":4.1,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"1% ITM","dte":2,"window":"before 2pm","n":67,"wr":83.6,"aw":28.0,"al":-33.7,"payoff":0.8,"pf":4.2,"mean":17.8,"med":20.7,"half":4.5,"zero":0.0},{"alert":"15-min Divergence Buy","strike":"ATM","dte":0,"window":"all day","n":70,"wr":72.9,"aw":146.7,"al":-93.9,"payoff":1.6,"pf":4.2,"mean":81.4,"med":67.1,"half":25.7,"zero":21.4},{"alert":"15-min Divergence Buy","strike":"ATM","dte":0,"window":"before 2pm","n":67,"wr":71.6,"aw":150.0,"al":-93.9,"payoff":1.6,"pf":4.0,"mean":80.8,"med":62.0,"half":26.9,"zero":22.4},{"alert":"15-min Divergence Buy","strike":"ATM","dte":1,"window":"all day","n":73,"wr":78.1,"aw":59.2,"al":-62.1,"payoff":1.0,"pf":3.4,"mean":32.6,"med":33.2,"half":16.4,"zero":5.5},{"alert":"15-min Divergence Buy","strike":"ATM","dte":1,"window":"before 2pm","n":67,"wr":80.6,"aw":60.6,"al":-64.1,"payoff":0.9,"pf":3.9,"mean":36.4,"med":33.5,"half":14.9,"zero":6.0},{"alert":"15-min Divergence Buy","strike":"ATM","dte":2,"window":"all day","n":73,"wr":80.8,"aw":37.4,"al":-41.7,"payoff":0.9,"pf":3.8,"mean":22.3,"med":23.6,"half":5.5,"zero":1.4},{"alert":"15-min Divergence Buy","strike":"ATM","dte":2,"window":"before 2pm","n":67,"wr":82.1,"aw":38.8,"al":-43.4,"payoff":0.9,"pf":4.1,"mean":24.1,"med":24.4,"half":6.0,"zero":1.5},{"alert":"15-min Divergence Buy","strike":"0.5% OTM","dte":0,"window":"all day","n":54,"wr":55.6,"aw":239.6,"al":-80.9,"payoff":3.0,"pf":3.7,"mean":97.2,"med":37.1,"half":35.2,"zero":29.6},{"alert":"15-min Divergence Buy","strike":"0.5% OTM","dte":0,"window":"before 2pm","n":53,"wr":56.6,"aw":239.6,"al":-80.1,"payoff":3.0,"pf":3.9,"mean":100.9,"med":39.3,"half":34.0,"zero":28.3},{"alert":"15-min Divergence Buy","strike":"0.5% OTM","dte":1,"window":"all day","n":73,"wr":76.7,"aw":69.4,"al":-73.5,"payoff":0.9,"pf":3.1,"mean":36.1,"med":35.4,"half":17.8,"zero":12.3},{"alert":"15-min Divergence Buy","strike":"0.5% OTM","dte":1,"window":"before 2pm","n":67,"wr":79.1,"aw":71.8,"al":-71.4,"payoff":1.0,"pf":3.8,"mean":41.8,"med":40.9,"half":14.9,"zero":10.4},{"alert":"15-min Divergence Buy","strike":"0.5% OTM","dte":2,"window":"all day","n":73,"wr":79.5,"aw":42.3,"al":-47.3,"payoff":0.9,"pf":3.5,"mean":23.9,"med":25.0,"half":8.2,"zero":2.7},{"alert":"15-min Divergence Buy","strike":"0.5% OTM","dte":2,"window":"before 2pm","n":67,"wr":82.1,"aw":43.3,"al":-50.5,"payoff":0.9,"pf":3.9,"mean":26.5,"med":26.6,"half":9.0,"zero":3.0},{"alert":"15-min Divergence Buy","strike":"1% OTM","dte":0,"window":"all day","n":22,"wr":45.5,"aw":421.4,"al":-74.9,"payoff":5.6,"pf":4.7,"mean":150.7,"med":-18.0,"half":40.9,"zero":22.7},{"alert":"15-min Divergence Buy","strike":"1% OTM","dte":0,"window":"before 2pm","n":22,"wr":45.5,"aw":421.4,"al":-74.9,"payoff":5.6,"pf":4.7,"mean":150.7,"med":-18.0,"half":40.9,"zero":22.7},{"alert":"15-min Divergence Buy","strike":"1% OTM","dte":1,"window":"all day","n":65,"wr":73.8,"aw":81.2,"al":-74.4,"payoff":1.1,"pf":3.1,"mean":40.5,"med":37.0,"half":20.0,"zero":12.3},{"alert":"15-min Divergence Buy","strike":"1% OTM","dte":1,"window":"before 2pm","n":59,"wr":78.0,"aw":82.7,"al":-71.3,"payoff":1.2,"pf":4.1,"mean":48.8,"med":46.8,"half":15.3,"zero":10.2},{"alert":"15-min Divergence Buy","strike":"1% OTM","dte":2,"window":"all day","n":73,"wr":79.5,"aw":46.9,"al":-57.8,"payoff":0.8,"pf":3.1,"mean":25.4,"med":26.4,"half":12.3,"zero":4.1},{"alert":"15-min Divergence Buy","strike":"1% OTM","dte":2,"window":"before 2pm","n":67,"wr":82.1,"aw":48.2,"al":-59.3,"payoff":0.8,"pf":3.7,"mean":28.9,"med":27.9,"half":10.4,"zero":4.5},{"alert":"15-min Divergence Buy","strike":"2% OTM","dte":1,"window":"all day","n":45,"wr":71.1,"aw":111.3,"al":-80.6,"payoff":1.4,"pf":3.4,"mean":55.9,"med":38.9,"half":24.4,"zero":17.8},{"alert":"15-min Divergence Buy","strike":"2% OTM","dte":1,"window":"before 2pm","n":41,"wr":73.2,"aw":115.6,"al":-77.1,"payoff":1.5,"pf":4.1,"mean":63.9,"med":51.0,"half":22.0,"zero":14.6},{"alert":"15-min Divergence Buy","strike":"2% OTM","dte":2,"window":"all day","n":65,"wr":75.4,"aw":58.1,"al":-53.5,"payoff":1.1,"pf":3.3,"mean":30.6,"med":29.4,"half":10.8,"zero":6.2},{"alert":"15-min Divergence Buy","strike":"2% OTM","dte":2,"window":"before 2pm","n":60,"wr":78.3,"aw":59.4,"al":-54.8,"payoff":1.1,"pf":3.9,"mean":34.7,"med":31.6,"half":8.3,"zero":6.7},{"alert":"1-hour Trend Dip Buy","strike":"2% ITM","dte":0,"window":"all day","n":84,"wr":63.1,"aw":22.6,"al":-24.7,"payoff":0.9,"pf":1.6,"mean":5.1,"med":5.7,"half":7.1,"zero":1.2},{"alert":"1-hour Trend Dip Buy","strike":"2% ITM","dte":0,"window":"before 2pm","n":74,"wr":66.2,"aw":23.3,"al":-26.8,"payoff":0.9,"pf":1.7,"mean":6.4,"med":7.2,"half":8.1,"zero":1.4},{"alert":"1-hour Trend Dip Buy","strike":"2% ITM","dte":1,"window":"all day","n":99,"wr":61.6,"aw":43.0,"al":-44.8,"payoff":1.0,"pf":1.5,"mean":9.3,"med":12.3,"half":16.2,"zero":4.0},{"alert":"1-hour Trend Dip Buy","strike":"2% ITM","dte":1,"window":"before 2pm","n":74,"wr":66.2,"aw":38.5,"al":-44.1,"payoff":0.9,"pf":1.7,"mean":10.6,"med":13.6,"half":14.9,"zero":4.1},{"alert":"1-hour Trend Dip Buy","strike":"2% ITM","dte":2,"window":"all day","n":99,"wr":64.6,"aw":42.2,"al":-49.8,"payoff":0.8,"pf":1.5,"mean":9.7,"med":16.4,"half":17.2,"zero":7.1},{"alert":"1-hour Trend Dip Buy","strike":"2% ITM","dte":2,"window":"before 2pm","n":74,"wr":63.5,"aw":41.7,"al":-49.8,"payoff":0.8,"pf":1.5,"mean":8.3,"med":14.0,"half":17.6,"zero":8.1},{"alert":"1-hour Trend Dip Buy","strike":"1% ITM","dte":0,"window":"all day","n":84,"wr":63.1,"aw":45.2,"al":-41.0,"payoff":1.1,"pf":1.9,"mean":13.4,"med":11.4,"half":14.3,"zero":7.1},{"alert":"1-hour Trend Dip Buy","strike":"1% ITM","dte":0,"window":"before 2pm","n":74,"wr":66.2,"aw":46.4,"al":-42.9,"payoff":1.1,"pf":2.1,"mean":16.2,"med":13.4,"half":13.5,"zero":8.1},{"alert":"1-hour Trend Dip Buy","strike":"1% ITM","dte":1,"window":"all day","n":99,"wr":57.6,"aw":73.4,"al":-62.7,"payoff":1.2,"pf":1.6,"mean":15.7,"med":13.2,"half":25.3,"zero":16.2},{"alert":"1-hour Trend Dip Buy","strike":"1% ITM","dte":1,"window":"before 2pm","n":74,"wr":62.2,"aw":66.6,"al":-59.9,"payoff":1.1,"pf":1.8,"mean":18.7,"med":13.5,"half":20.3,"zero":14.9},{"alert":"1-hour Trend Dip Buy","strike":"1% ITM","dte":2,"window":"all day","n":99,"wr":62.6,"aw":59.7,"al":-67.2,"payoff":0.9,"pf":1.5,"mean":12.2,"med":11.7,"half":23.2,"zero":15.2},{"alert":"1-hour Trend Dip Buy","strike":"1% ITM","dte":2,"window":"before 2pm","n":74,"wr":62.2,"aw":60.3,"al":-66.0,"payoff":0.9,"pf":1.5,"mean":12.5,"med":9.2,"half":23.0,"zero":14.9},{"alert":"1-hour Trend Dip Buy","strike":"ATM","dte":0,"window":"all day","n":84,"wr":45.2,"aw":183.1,"al":-77.9,"payoff":2.4,"pf":1.9,"mean":40.2,"med":-16.1,"half":41.7,"zero":35.7},{"alert":"1-hour Trend Dip Buy","strike":"ATM","dte":0,"window":"before 2pm","n":74,"wr":47.3,"aw":184.4,"al":-73.9,"payoff":2.5,"pf":2.2,"mean":48.3,"med":-8.2,"half":37.8,"zero":31.1},{"alert":"1-hour Trend Dip Buy","strike":"ATM","dte":1,"window":"all day","n":99,"wr":40.4,"aw":176.2,"al":-76.4,"payoff":2.3,"pf":1.6,"mean":25.6,"med":-33.3,"half":46.5,"zero":33.3},{"alert":"1-hour Trend Dip Buy","strike":"ATM","dte":1,"window":"before 2pm","n":74,"wr":41.9,"aw":160.6,"al":-71.9,"payoff":2.2,"pf":1.6,"mean":25.5,"med":-25.9,"half":43.2,"zero":27.0},{"alert":"1-hour Trend Dip Buy","strike":"ATM","dte":2,"window":"all day","n":99,"wr":48.5,"aw":103.5,"al":-71.1,"payoff":1.5,"pf":1.4,"mean":13.5,"med":-4.3,"half":37.4,"zero":25.3},{"alert":"1-hour Trend Dip Buy","strike":"ATM","dte":2,"window":"before 2pm","n":74,"wr":47.3,"aw":108.6,"al":-69.4,"payoff":1.6,"pf":1.4,"mean":14.8,"med":-7.2,"half":36.5,"zero":24.3},{"alert":"1-hour Trend Dip Buy","strike":"0.5% OTM","dte":0,"window":"all day","n":60,"wr":16.7,"aw":749.7,"al":-96.7,"payoff":7.8,"pf":1.6,"mean":44.4,"med":-100.0,"half":80.0,"zero":76.7},{"alert":"1-hour Trend Dip Buy","strike":"0.5% OTM","dte":0,"window":"before 2pm","n":59,"wr":15.3,"aw":751.3,"al":-96.7,"payoff":7.8,"pf":1.4,"mean":32.7,"med":-100.0,"half":81.4,"zero":78.0},{"alert":"1-hour Trend Dip Buy","strike":"0.5% OTM","dte":1,"window":"all day","n":99,"wr":31.3,"aw":283.5,"al":-85.2,"payoff":3.3,"pf":1.5,"mean":30.3,"med":-89.4,"half":58.6,"zero":48.5},{"alert":"1-hour Trend Dip Buy","strike":"0.5% OTM","dte":1,"window":"before 2pm","n":74,"wr":31.1,"aw":253.4,"al":-80.9,"payoff":3.1,"pf":1.4,"mean":23.0,"med":-63.8,"half":55.4,"zero":44.6},{"alert":"1-hour Trend Dip Buy","strike":"0.5% OTM","dte":2,"window":"all day","n":99,"wr":40.4,"aw":139.6,"al":-75.0,"payoff":1.9,"pf":1.3,"mean":11.7,"med":-26.6,"half":43.4,"zero":34.3},{"alert":"1-hour Trend Dip Buy","strike":"0.5% OTM","dte":2,"window":"before 2pm","n":74,"wr":43.2,"aw":134.2,"al":-74.7,"payoff":1.8,"pf":1.4,"mean":15.6,"med":-22.2,"half":40.5,"zero":32.4},{"alert":"1-hour Trend Dip Buy","strike":"1% OTM","dte":0,"window":"all day","n":22,"wr":18.2,"aw":2311.7,"al":-100.0,"payoff":23.1,"pf":5.1,"mean":338.5,"med":-100.0,"half":81.8,"zero":81.8},{"alert":"1-hour Trend Dip Buy","strike":"1% OTM","dte":0,"window":"before 2pm","n":22,"wr":18.2,"aw":2311.7,"al":-100.0,"payoff":23.1,"pf":5.1,"mean":338.5,"med":-100.0,"half":81.8,"zero":81.8},{"alert":"1-hour Trend Dip Buy","strike":"1% OTM","dte":1,"window":"all day","n":94,"wr":24.5,"aw":462.1,"al":-96.6,"payoff":4.8,"pf":1.6,"mean":40.1,"med":-100.0,"half":74.5,"zero":68.1},{"alert":"1-hour Trend Dip Buy","strike":"1% OTM","dte":1,"window":"before 2pm","n":71,"wr":22.5,"aw":451.4,"al":-96.1,"payoff":4.7,"pf":1.4,"mean":27.3,"med":-100.0,"half":76.1,"zero":69.0},{"alert":"1-hour Trend Dip Buy","strike":"1% OTM","dte":2,"window":"all day","n":99,"wr":36.4,"aw":166.3,"al":-84.2,"payoff":2.0,"pf":1.1,"mean":6.9,"med":-70.9,"half":54.5,"zero":40.4},{"alert":"1-hour Trend Dip Buy","strike":"1% OTM","dte":2,"window":"before 2pm","n":74,"wr":37.8,"aw":166.4,"al":-82.8,"payoff":2.0,"pf":1.2,"mean":11.5,"med":-59.3,"half":54.1,"zero":36.5},{"alert":"1-hour Trend Dip Buy","strike":"2% OTM","dte":1,"window":"all day","n":55,"wr":18.2,"aw":1009.9,"al":-98.9,"payoff":10.2,"pf":2.3,"mean":102.7,"med":-100.0,"half":81.8,"zero":80.0},{"alert":"1-hour Trend Dip Buy","strike":"2% OTM","dte":1,"window":"before 2pm","n":41,"wr":17.1,"aw":712.5,"al":-98.6,"payoff":7.2,"pf":1.5,"mean":39.9,"med":-100.0,"half":82.9,"zero":80.5},{"alert":"1-hour Trend Dip Buy","strike":"2% OTM","dte":2,"window":"all day","n":86,"wr":19.8,"aw":291.6,"al":-89.0,"payoff":3.3,"pf":0.8,"mean":-13.8,"med":-100.0,"half":72.1,"zero":59.3},{"alert":"1-hour Trend Dip Buy","strike":"2% OTM","dte":2,"window":"before 2pm","n":65,"wr":20.0,"aw":240.5,"al":-85.8,"payoff":2.8,"pf":0.7,"mean":-20.6,"med":-97.0,"half":69.2,"zero":53.8},{"alert":"1-hour Divergence Buy","strike":"2% ITM","dte":0,"window":"all day","n":34,"wr":58.8,"aw":54.9,"al":-35.1,"payoff":1.6,"pf":2.2,"mean":17.8,"med":13.4,"half":11.8,"zero":2.9},{"alert":"1-hour Divergence Buy","strike":"2% ITM","dte":0,"window":"before 2pm","n":33,"wr":60.6,"aw":54.9,"al":-37.3,"payoff":1.5,"pf":2.3,"mean":18.6,"med":14.7,"half":12.1,"zero":3.0},{"alert":"1-hour Divergence Buy","strike":"2% ITM","dte":1,"window":"all day","n":48,"wr":81.2,"aw":93.7,"al":-43.0,"payoff":2.2,"pf":9.4,"mean":68.0,"med":38.7,"half":6.2,"zero":2.1},{"alert":"1-hour Divergence Buy","strike":"2% ITM","dte":1,"window":"before 2pm","n":33,"wr":78.8,"aw":90.9,"al":-51.4,"payoff":1.8,"pf":6.6,"mean":60.7,"med":64.0,"half":9.1,"zero":3.0},{"alert":"1-hour Divergence Buy","strike":"2% ITM","dte":2,"window":"all day","n":48,"wr":77.1,"aw":85.4,"al":-40.7,"payoff":2.1,"pf":7.1,"mean":56.5,"med":52.7,"half":8.3,"zero":6.2},{"alert":"1-hour Divergence Buy","strike":"2% ITM","dte":2,"window":"before 2pm","n":33,"wr":78.8,"aw":77.4,"al":-42.4,"payoff":1.8,"pf":6.8,"mean":52.0,"med":56.1,"half":9.1,"zero":6.1},{"alert":"1-hour Divergence Buy","strike":"1% ITM","dte":0,"window":"all day","n":34,"wr":58.8,"aw":106.1,"al":-56.8,"payoff":1.9,"pf":2.7,"mean":39.0,"med":25.4,"half":20.6,"zero":20.6},{"alert":"1-hour Divergence Buy","strike":"1% ITM","dte":0,"window":"before 2pm","n":33,"wr":60.6,"aw":106.1,"al":-59.9,"payoff":1.8,"pf":2.7,"mean":40.7,"med":26.9,"half":21.2,"zero":21.2},{"alert":"1-hour Divergence Buy","strike":"1% ITM","dte":1,"window":"all day","n":48,"wr":75.0,"aw":148.5,"al":-51.1,"payoff":2.9,"pf":8.7,"mean":98.6,"med":56.4,"half":8.3,"zero":6.2},{"alert":"1-hour Divergence Buy","strike":"1% ITM","dte":1,"window":"before 2pm","n":33,"wr":75.8,"aw":140.0,"al":-65.9,"payoff":2.1,"pf":6.6,"mean":90.1,"med":102.3,"half":12.1,"zero":9.1},{"alert":"1-hour Divergence Buy","strike":"1% ITM","dte":2,"window":"all day","n":48,"wr":75.0,"aw":114.6,"al":-51.4,"payoff":2.2,"pf":6.7,"mean":73.1,"med":62.8,"half":10.4,"zero":8.3},{"alert":"1-hour Divergence Buy","strike":"1% ITM","dte":2,"window":"before 2pm","n":33,"wr":75.8,"aw":104.6,"al":-50.5,"payoff":2.1,"pf":6.5,"mean":67.0,"med":63.2,"half":9.1,"zero":9.1},{"alert":"1-hour Divergence Buy","strike":"ATM","dte":0,"window":"all day","n":34,"wr":52.9,"aw":271.4,"al":-85.0,"payoff":3.2,"pf":3.6,"mean":103.7,"med":16.4,"half":38.2,"zero":35.3},{"alert":"1-hour Divergence Buy","strike":"ATM","dte":0,"window":"before 2pm","n":33,"wr":54.5,"aw":271.4,"al":-86.5,"payoff":3.1,"pf":3.8,"mean":108.7,"med":18.4,"half":36.4,"zero":36.4},{"alert":"1-hour Divergence Buy","strike":"ATM","dte":1,"window":"all day","n":48,"wr":62.5,"aw":269.5,"al":-75.2,"payoff":3.6,"pf":6.0,"mean":140.2,"med":58.2,"half":27.1,"zero":20.8},{"alert":"1-hour Divergence Buy","strike":"ATM","dte":1,"window":"before 2pm","n":33,"wr":66.7,"aw":242.5,"al":-82.7,"payoff":2.9,"pf":5.9,"mean":134.1,"med":136.4,"half":27.3,"zero":21.2},{"alert":"1-hour Divergence Buy","strike":"ATM","dte":2,"window":"all day","n":48,"wr":66.7,"aw":164.2,"al":-61.9,"payoff":2.7,"pf":5.3,"mean":88.9,"med":68.6,"half":20.8,"zero":12.5},{"alert":"1-hour Divergence Buy","strike":"ATM","dte":2,"window":"before 2pm","n":33,"wr":72.7,"aw":137.6,"al":-67.9,"payoff":2.0,"pf":5.4,"mean":81.6,"med":69.5,"half":18.2,"zero":12.1},{"alert":"1-hour Divergence Buy","strike":"0.5% OTM","dte":0,"window":"all day","n":33,"wr":33.3,"aw":854.2,"al":-99.6,"payoff":8.6,"pf":4.3,"mean":218.3,"med":-100.0,"half":66.7,"zero":63.6},{"alert":"1-hour Divergence Buy","strike":"0.5% OTM","dte":0,"window":"before 2pm","n":32,"wr":34.4,"aw":854.2,"al":-99.6,"payoff":8.6,"pf":4.5,"mean":228.2,"med":-100.0,"half":65.6,"zero":62.5},{"alert":"1-hour Divergence Buy","strike":"0.5% OTM","dte":1,"window":"all day","n":48,"wr":52.1,"aw":392.8,"al":-82.3,"payoff":4.8,"pf":5.2,"mean":165.1,"med":24.1,"half":39.6,"zero":33.3},{"alert":"1-hour Divergence Buy","strike":"0.5% OTM","dte":1,"window":"before 2pm","n":33,"wr":57.6,"aw":347.1,"al":-81.8,"payoff":4.2,"pf":5.8,"mean":165.2,"med":159.6,"half":36.4,"zero":30.3},{"alert":"1-hour Divergence Buy","strike":"0.5% OTM","dte":2,"window":"all day","n":48,"wr":64.6,"aw":190.8,"al":-72.3,"payoff":2.6,"pf":4.8,"mean":97.6,"med":62.1,"half":22.9,"zero":18.8},{"alert":"1-hour Divergence Buy","strike":"0.5% OTM","dte":2,"window":"before 2pm","n":33,"wr":69.7,"aw":160.9,"al":-67.7,"payoff":2.4,"pf":5.5,"mean":91.6,"med":74.6,"half":18.2,"zero":12.1},{"alert":"1-hour Divergence Buy","strike":"1% OTM","dte":0,"window":"all day","n":14,"wr":14.3,"aw":1883.9,"al":-100.0,"payoff":18.8,"pf":3.1,"mean":183.4,"med":-100.0,"half":85.7,"zero":85.7},{"alert":"1-hour Divergence Buy","strike":"1% OTM","dte":0,"window":"before 2pm","n":14,"wr":14.3,"aw":1883.9,"al":-100.0,"payoff":18.8,"pf":3.1,"mean":183.4,"med":-100.0,"half":85.7,"zero":85.7},{"alert":"1-hour Divergence Buy","strike":"1% OTM","dte":1,"window":"all day","n":48,"wr":45.8,"aw":571.9,"al":-93.2,"payoff":6.1,"pf":5.2,"mean":211.6,"med":-58.6,"half":50.0,"zero":43.8},{"alert":"1-hour Divergence Buy","strike":"1% OTM","dte":1,"window":"before 2pm","n":33,"wr":51.5,"aw":509.2,"al":-92.8,"payoff":5.5,"pf":5.8,"mean":217.3,"med":150.9,"half":45.5,"zero":39.4},{"alert":"1-hour Divergence Buy","strike":"1% OTM","dte":2,"window":"all day","n":48,"wr":58.3,"aw":235.7,"al":-73.0,"payoff":3.2,"pf":4.5,"mean":107.1,"med":37.1,"half":33.3,"zero":18.8},{"alert":"1-hour Divergence Buy","strike":"1% OTM","dte":2,"window":"before 2pm","n":33,"wr":63.6,"aw":194.1,"al":-70.5,"payoff":2.8,"pf":4.8,"mean":97.9,"med":81.4,"half":30.3,"zero":12.1},{"alert":"1-hour Divergence Buy","strike":"2% OTM","dte":1,"window":"all day","n":47,"wr":29.8,"aw":1453.8,"al":-89.9,"payoff":16.2,"pf":6.9,"mean":369.9,"med":-100.0,"half":61.7,"zero":59.6},{"alert":"1-hour Divergence Buy","strike":"2% OTM","dte":1,"window":"before 2pm","n":32,"wr":31.2,"aw":1261.1,"al":-84.9,"payoff":14.9,"pf":6.8,"mean":335.7,"med":-100.0,"half":56.2,"zero":53.1},{"alert":"1-hour Divergence Buy","strike":"2% OTM","dte":2,"window":"all day","n":47,"wr":55.3,"aw":300.4,"al":-83.7,"payoff":3.6,"pf":4.4,"mean":128.8,"med":36.0,"half":38.3,"zero":31.9},{"alert":"1-hour Divergence Buy","strike":"2% OTM","dte":2,"window":"before 2pm","n":32,"wr":59.4,"aw":225.7,"al":-78.0,"payoff":2.9,"pf":4.2,"mean":102.3,"med":83.2,"half":34.4,"zero":25.0},{"alert":"1-hour Breadth Buy","strike":"2% ITM","dte":0,"window":"all day","n":88,"wr":55.7,"aw":49.1,"al":-33.7,"payoff":1.5,"pf":1.8,"mean":12.4,"med":4.4,"half":9.1,"zero":3.4},{"alert":"1-hour Breadth Buy","strike":"2% ITM","dte":0,"window":"before 2pm","n":75,"wr":57.3,"aw":52.2,"al":-37.9,"payoff":1.4,"pf":1.9,"mean":13.8,"med":5.9,"half":10.7,"zero":4.0},{"alert":"1-hour Breadth Buy","strike":"2% ITM","dte":1,"window":"all day","n":96,"wr":67.7,"aw":68.2,"al":-53.2,"payoff":1.3,"pf":2.7,"mean":29.0,"med":37.1,"half":14.6,"zero":7.3},{"alert":"1-hour Breadth Buy","strike":"2% ITM","dte":1,"window":"before 2pm","n":75,"wr":66.7,"aw":77.7,"al":-55.3,"payoff":1.4,"pf":2.8,"mean":33.4,"med":48.6,"half":16.0,"zero":9.3},{"alert":"1-hour Breadth Buy","strike":"2% ITM","dte":2,"window":"all day","n":96,"wr":62.5,"aw":72.1,"al":-52.2,"payoff":1.4,"pf":2.3,"mean":25.5,"med":31.8,"half":17.7,"zero":7.3},{"alert":"1-hour Breadth Buy","strike":"2% ITM","dte":2,"window":"before 2pm","n":75,"wr":64.0,"aw":77.0,"al":-50.6,"payoff":1.5,"pf":2.7,"mean":31.0,"med":35.0,"half":16.0,"zero":6.7},{"alert":"1-hour Breadth Buy","strike":"1% ITM","dte":0,"window":"all day","n":88,"wr":55.7,"aw":95.8,"al":-57.6,"payoff":1.7,"pf":2.1,"mean":27.8,"med":8.5,"half":25.0,"zero":10.2},{"alert":"1-hour Breadth Buy","strike":"1% ITM","dte":0,"window":"before 2pm","n":75,"wr":57.3,"aw":101.4,"al":-64.0,"payoff":1.6,"pf":2.1,"mean":30.8,"med":10.8,"half":28.0,"zero":12.0},{"alert":"1-hour Breadth Buy","strike":"1% ITM","dte":1,"window":"all day","n":96,"wr":61.5,"aw":103.5,"al":-65.8,"payoff":1.6,"pf":2.5,"mean":38.2,"med":39.0,"half":25.0,"zero":15.6},{"alert":"1-hour Breadth Buy","strike":"1% ITM","dte":1,"window":"before 2pm","n":75,"wr":61.3,"aw":118.4,"al":-67.1,"payoff":1.8,"pf":2.8,"mean":46.7,"med":55.1,"half":24.0,"zero":18.7},{"alert":"1-hour Breadth Buy","strike":"1% ITM","dte":2,"window":"all day","n":96,"wr":57.3,"aw":99.6,"al":-61.2,"payoff":1.6,"pf":2.2,"mean":30.9,"med":33.5,"half":25.0,"zero":14.6},{"alert":"1-hour Breadth Buy","strike":"1% ITM","dte":2,"window":"before 2pm","n":75,"wr":57.3,"aw":110.2,"al":-57.5,"payoff":1.9,"pf":2.6,"mean":38.7,"med":44.2,"half":24.0,"zero":12.0},{"alert":"1-hour Breadth Buy","strike":"ATM","dte":0,"window":"all day","n":88,"wr":45.5,"aw":367.8,"al":-89.6,"payoff":4.1,"pf":3.4,"mean":118.3,"med":-46.9,"half":48.9,"zero":42.0},{"alert":"1-hour Breadth Buy","strike":"ATM","dte":0,"window":"before 2pm","n":75,"wr":45.3,"aw":352.2,"al":-89.1,"payoff":4.0,"pf":3.3,"mean":111.0,"med":-49.4,"half":49.3,"zero":41.3},{"alert":"1-hour Breadth Buy","strike":"ATM","dte":1,"window":"all day","n":96,"wr":55.2,"aw":158.7,"al":-82.2,"payoff":1.9,"pf":2.4,"mean":50.8,"med":21.2,"half":37.5,"zero":26.0},{"alert":"1-hour Breadth Buy","strike":"ATM","dte":1,"window":"before 2pm","n":75,"wr":58.7,"aw":176.1,"al":-87.2,"payoff":2.0,"pf":2.9,"mean":67.3,"med":46.2,"half":37.3,"zero":25.3},{"alert":"1-hour Breadth Buy","strike":"ATM","dte":2,"window":"all day","n":96,"wr":53.1,"aw":130.4,"al":-70.9,"payoff":1.8,"pf":2.1,"mean":36.1,"med":21.8,"half":32.3,"zero":21.9},{"alert":"1-hour Breadth Buy","strike":"ATM","dte":2,"window":"before 2pm","n":75,"wr":54.7,"aw":143.4,"al":-68.8,"payoff":2.1,"pf":2.5,"mean":47.2,"med":30.8,"half":29.3,"zero":18.7},{"alert":"1-hour Breadth Buy","strike":"0.5% OTM","dte":0,"window":"all day","n":81,"wr":34.6,"aw":971.7,"al":-99.7,"payoff":9.7,"pf":5.1,"mean":270.7,"med":-100.0,"half":65.4,"zero":64.2},{"alert":"1-hour Breadth Buy","strike":"0.5% OTM","dte":0,"window":"before 2pm","n":74,"wr":35.1,"aw":959.3,"al":-99.7,"payoff":9.6,"pf":5.2,"mean":272.4,"med":-100.0,"half":64.9,"zero":63.5},{"alert":"1-hour Breadth Buy","strike":"0.5% OTM","dte":1,"window":"all day","n":96,"wr":49.0,"aw":208.5,"al":-86.3,"payoff":2.4,"pf":2.3,"mean":58.0,"med":-11.4,"half":43.8,"zero":37.5},{"alert":"1-hour Breadth Buy","strike":"0.5% OTM","dte":1,"window":"before 2pm","n":75,"wr":53.3,"aw":233.0,"al":-89.2,"payoff":2.6,"pf":3.0,"mean":82.6,"med":33.7,"half":42.7,"zero":34.7},{"alert":"1-hour Breadth Buy","strike":"0.5% OTM","dte":2,"window":"all day","n":96,"wr":50.0,"aw":150.9,"al":-75.0,"payoff":2.0,"pf":2.0,"mean":37.9,"med":1.0,"half":36.5,"zero":26.0},{"alert":"1-hour Breadth Buy","strike":"0.5% OTM","dte":2,"window":"before 2pm","n":75,"wr":52.0,"aw":167.4,"al":-74.3,"payoff":2.3,"pf":2.4,"mean":51.4,"med":8.5,"half":34.7,"zero":22.7},{"alert":"1-hour Breadth Buy","strike":"1% OTM","dte":0,"window":"all day","n":54,"wr":33.3,"aw":1831.9,"al":-100.0,"payoff":18.3,"pf":9.2,"mean":544.0,"med":-100.0,"half":66.7,"zero":66.7},{"alert":"1-hour Breadth Buy","strike":"1% OTM","dte":0,"window":"before 2pm","n":54,"wr":33.3,"aw":1831.9,"al":-100.0,"payoff":18.3,"pf":9.2,"mean":544.0,"med":-100.0,"half":66.7,"zero":66.7},{"alert":"1-hour Breadth Buy","strike":"1% OTM","dte":1,"window":"all day","n":96,"wr":40.6,"aw":292.3,"al":-91.6,"payoff":3.2,"pf":2.2,"mean":64.4,"med":-79.4,"half":55.2,"zero":46.9},{"alert":"1-hour Breadth Buy","strike":"1% OTM","dte":1,"window":"before 2pm","n":75,"wr":49.3,"aw":301.2,"al":-93.9,"payoff":3.2,"pf":3.1,"mean":101.0,"med":-18.7,"half":49.3,"zero":42.7},{"alert":"1-hour Breadth Buy","strike":"1% OTM","dte":2,"window":"all day","n":96,"wr":46.9,"aw":174.4,"al":-80.0,"payoff":2.2,"pf":1.9,"mean":39.2,"med":-22.1,"half":39.6,"zero":32.3},{"alert":"1-hour Breadth Buy","strike":"1% OTM","dte":2,"window":"before 2pm","n":75,"wr":49.3,"aw":193.8,"al":-80.4,"payoff":2.4,"pf":2.3,"mean":54.8,"med":-7.8,"half":38.7,"zero":29.3},{"alert":"1-hour Breadth Buy","strike":"2% OTM","dte":1,"window":"all day","n":92,"wr":29.3,"aw":436.6,"al":-93.3,"payoff":4.7,"pf":1.9,"mean":62.2,"med":-100.0,"half":65.2,"zero":60.9},{"alert":"1-hour Breadth Buy","strike":"2% OTM","dte":1,"window":"before 2pm","n":73,"wr":37.0,"aw":436.6,"al":-91.6,"payoff":4.8,"pf":2.8,"mean":103.7,"med":-100.0,"half":56.2,"zero":53.4},{"alert":"1-hour Breadth Buy","strike":"2% OTM","dte":2,"window":"all day","n":96,"wr":38.5,"aw":214.9,"al":-82.0,"payoff":2.6,"pf":1.6,"mean":32.5,"med":-51.5,"half":51.0,"zero":39.6},{"alert":"1-hour Breadth Buy","strike":"2% OTM","dte":2,"window":"before 2pm","n":75,"wr":44.0,"aw":233.9,"al":-85.1,"payoff":2.7,"pf":2.2,"mean":55.3,"med":-49.1,"half":49.3,"zero":37.3},{"alert":"1-hour Pullback Buy","strike":"2% ITM","dte":0,"window":"all day","n":197,"wr":60.4,"aw":26.0,"al":-23.4,"payoff":1.1,"pf":1.7,"mean":6.5,"med":8.8,"half":4.6,"zero":1.0},{"alert":"1-hour Pullback Buy","strike":"2% ITM","dte":0,"window":"before 2pm","n":167,"wr":61.7,"aw":27.3,"al":-25.8,"payoff":1.1,"pf":1.7,"mean":6.9,"med":10.2,"half":5.4,"zero":1.2},{"alert":"1-hour Pullback Buy","strike":"2% ITM","dte":1,"window":"all day","n":238,"wr":55.0,"aw":48.1,"al":-49.0,"payoff":1.0,"pf":1.2,"mean":4.4,"med":5.4,"half":18.9,"zero":8.0},{"alert":"1-hour Pullback Buy","strike":"2% ITM","dte":1,"window":"before 2pm","n":167,"wr":62.3,"aw":47.0,"al":-47.2,"payoff":1.0,"pf":1.6,"mean":11.5,"med":14.8,"half":15.6,"zero":4.8},{"alert":"1-hour Pullback Buy","strike":"2% ITM","dte":2,"window":"all day","n":238,"wr":58.4,"aw":44.3,"al":-46.3,"payoff":1.0,"pf":1.3,"mean":6.6,"med":7.8,"half":15.1,"zero":9.7},{"alert":"1-hour Pullback Buy","strike":"2% ITM","dte":2,"window":"before 2pm","n":167,"wr":66.5,"aw":41.0,"al":-39.9,"payoff":1.0,"pf":2.0,"mean":13.9,"med":13.2,"half":9.6,"zero":6.0},{"alert":"1-hour Pullback Buy","strike":"1% ITM","dte":0,"window":"all day","n":197,"wr":61.4,"aw":48.8,"al":-43.6,"payoff":1.1,"pf":1.8,"mean":13.2,"med":13.0,"half":15.7,"zero":4.6},{"alert":"1-hour Pullback Buy","strike":"1% ITM","dte":0,"window":"before 2pm","n":167,"wr":61.7,"aw":51.6,"al":-46.6,"payoff":1.1,"pf":1.8,"mean":14.0,"med":14.2,"half":16.8,"zero":5.4},{"alert":"1-hour Pullback Buy","strike":"1% ITM","dte":1,"window":"all day","n":238,"wr":50.0,"aw":73.9,"al":-62.8,"payoff":1.2,"pf":1.2,"mean":5.6,"med":0.4,"half":30.7,"zero":18.1},{"alert":"1-hour Pullback Buy","strike":"1% ITM","dte":1,"window":"before 2pm","n":167,"wr":57.5,"aw":71.1,"al":-60.9,"payoff":1.2,"pf":1.6,"mean":15.0,"med":15.0,"half":24.6,"zero":15.0},{"alert":"1-hour Pullback Buy","strike":"1% ITM","dte":2,"window":"all day","n":238,"wr":52.5,"aw":59.6,"al":-54.6,"payoff":1.1,"pf":1.2,"mean":5.4,"med":4.5,"half":23.9,"zero":13.0},{"alert":"1-hour Pullback Buy","strike":"1% ITM","dte":2,"window":"before 2pm","n":167,"wr":59.3,"aw":55.7,"al":-46.1,"payoff":1.2,"pf":1.8,"mean":14.2,"med":12.8,"half":15.6,"zero":8.4},{"alert":"1-hour Pullback Buy","strike":"ATM","dte":0,"window":"all day","n":197,"wr":44.2,"aw":156.1,"al":-83.6,"payoff":1.9,"pf":1.5,"mean":22.3,"med":-32.7,"half":47.2,"zero":36.5},{"alert":"1-hour Pullback Buy","strike":"ATM","dte":0,"window":"before 2pm","n":167,"wr":43.7,"aw":150.7,"al":-82.2,"payoff":1.8,"pf":1.4,"mean":19.6,"med":-30.1,"half":47.3,"zero":34.7},{"alert":"1-hour Pullback Buy","strike":"ATM","dte":1,"window":"all day","n":238,"wr":42.4,"aw":117.5,"al":-78.9,"payoff":1.5,"pf":1.1,"mean":4.5,"med":-33.3,"half":44.5,"zero":32.4},{"alert":"1-hour Pullback Buy","strike":"ATM","dte":1,"window":"before 2pm","n":167,"wr":49.7,"aw":110.0,"al":-74.2,"payoff":1.5,"pf":1.5,"mean":17.3,"med":-2.4,"half":36.5,"zero":24.6},{"alert":"1-hour Pullback Buy","strike":"ATM","dte":2,"window":"all day","n":238,"wr":46.6,"aw":76.8,"al":-65.3,"payoff":1.2,"pf":1.0,"mean":1.0,"med":-7.5,"half":34.0,"zero":22.3},{"alert":"1-hour Pullback Buy","strike":"ATM","dte":2,"window":"before 2pm","n":167,"wr":52.7,"aw":71.4,"al":-57.4,"payoff":1.2,"pf":1.4,"mean":10.5,"med":1.8,"half":25.7,"zero":15.0},{"alert":"1-hour Pullback Buy","strike":"0.5% OTM","dte":0,"window":"all day","n":173,"wr":27.2,"aw":298.6,"al":-95.1,"payoff":3.1,"pf":1.2,"mean":11.9,"med":-100.0,"half":71.1,"zero":64.2},{"alert":"1-hour Pullback Buy","strike":"0.5% OTM","dte":0,"window":"before 2pm","n":162,"wr":27.8,"aw":302.6,"al":-94.7,"payoff":3.2,"pf":1.2,"mean":15.7,"med":-100.0,"half":70.4,"zero":63.0},{"alert":"1-hour Pullback Buy","strike":"0.5% OTM","dte":1,"window":"all day","n":238,"wr":37.4,"aw":154.9,"al":-83.7,"payoff":1.9,"pf":1.1,"mean":5.6,"med":-69.0,"half":52.9,"zero":40.8},{"alert":"1-hour Pullback Buy","strike":"0.5% OTM","dte":1,"window":"before 2pm","n":167,"wr":45.5,"aw":138.3,"al":-79.4,"payoff":1.7,"pf":1.5,"mean":19.6,"med":-26.5,"half":43.1,"zero":31.1},{"alert":"1-hour Pullback Buy","strike":"0.5% OTM","dte":2,"window":"all day","n":238,"wr":42.9,"aw":90.5,"al":-70.0,"payoff":1.3,"pf":1.0,"mean":-1.2,"med":-23.0,"half":38.7,"zero":26.5},{"alert":"1-hour Pullback Buy","strike":"0.5% OTM","dte":2,"window":"before 2pm","n":167,"wr":48.5,"aw":83.6,"al":-63.5,"payoff":1.3,"pf":1.2,"mean":7.9,"med":-4.9,"half":30.5,"zero":19.2},{"alert":"1-hour Pullback Buy","strike":"1% OTM","dte":0,"window":"all day","n":111,"wr":12.6,"aw":487.8,"al":-96.6,"payoff":5.0,"pf":0.7,"mean":-22.9,"med":-100.0,"half":84.7,"zero":80.2},{"alert":"1-hour Pullback Buy","strike":"1% OTM","dte":0,"window":"before 2pm","n":111,"wr":12.6,"aw":487.8,"al":-96.6,"payoff":5.0,"pf":0.7,"mean":-22.9,"med":-100.0,"half":84.7,"zero":80.2},{"alert":"1-hour Pullback Buy","strike":"1% OTM","dte":1,"window":"all day","n":238,"wr":30.7,"aw":204.0,"al":-85.9,"payoff":2.4,"pf":1.1,"mean":3.0,"med":-91.7,"half":59.2,"zero":48.7},{"alert":"1-hour Pullback Buy","strike":"1% OTM","dte":1,"window":"before 2pm","n":167,"wr":37.1,"aw":180.3,"al":-80.8,"payoff":2.2,"pf":1.3,"mean":16.1,"med":-54.0,"half":50.3,"zero":37.7},{"alert":"1-hour Pullback Buy","strike":"1% OTM","dte":2,"window":"all day","n":238,"wr":39.1,"aw":105.9,"al":-74.0,"payoff":1.4,"pf":0.9,"mean":-3.7,"med":-36.8,"half":44.1,"zero":29.0},{"alert":"1-hour Pullback Buy","strike":"1% OTM","dte":2,"window":"before 2pm","n":167,"wr":44.9,"aw":97.3,"al":-68.5,"payoff":1.4,"pf":1.2,"mean":6.0,"med":-12.0,"half":36.5,"zero":22.2},{"alert":"1-hour Pullback Buy","strike":"2% OTM","dte":1,"window":"all day","n":228,"wr":18.0,"aw":358.0,"al":-92.1,"payoff":3.9,"pf":0.9,"mean":-11.2,"med":-100.0,"half":76.3,"zero":66.7},{"alert":"1-hour Pullback Buy","strike":"2% OTM","dte":1,"window":"before 2pm","n":161,"wr":21.7,"aw":283.9,"al":-89.1,"payoff":3.2,"pf":0.9,"mean":-8.0,"med":-100.0,"half":70.8,"zero":57.8},{"alert":"1-hour Pullback Buy","strike":"2% OTM","dte":2,"window":"all day","n":238,"wr":31.1,"aw":153.0,"al":-78.8,"payoff":1.9,"pf":0.9,"mean":-6.7,"med":-65.8,"half":55.9,"zero":37.8},{"alert":"1-hour Pullback Buy","strike":"2% OTM","dte":2,"window":"before 2pm","n":167,"wr":35.3,"aw":144.0,"al":-72.3,"payoff":2.0,"pf":1.1,"mean":4.1,"med":-40.2,"half":47.9,"zero":29.3}];
+  const order = ['15-min Divergence Buy','1-hour Trend Dip Buy','1-hour Divergence Buy','1-hour Breadth Buy','1-hour Pullback Buy'];
+  order.filter(a => M.some(r => r.alert === a)).forEach(a => { const o = document.createElement('option'); o.textContent = a; $('om-alert').appendChild(o); });
+  const STR = ['2% ITM','1% ITM','ATM','0.5% OTM','1% OTM','2% OTM'];
+  const NICE = {'2% ITM':'2% in the money','1% ITM':'1% in the money','ATM':'at the money','0.5% OTM':'0.5% out of the money','1% OTM':'1% out of the money','2% OTM':'2% out of the money'};
+  const fmt = (k, v) => v === null || v === undefined ? '&ndash;' :
+    (k === 'wr' || k === 'half' || k === 'zero') ? v.toFixed(0) + '%' :
+    (k === 'mean' || k === 'med') ? (v > 0 ? '+' : '') + v.toFixed(0) + '%' : (k === 'n') ? v : v.toFixed(2);
+  const ocls = (k, v) => v === null || v === undefined ? '' :
+    (k === 'half' || k === 'zero') ? (v <= 10 ? 'pos' : v >= 50 ? 'neg' : '') :
+    (k === 'mean' || k === 'med') ? (v > 0 ? 'pos' : 'neg') :
+    (k === 'wr') ? (v >= 60 ? 'pos' : v < 40 ? 'neg' : '') : (k === 'pf') ? (v >= 2 ? 'pos' : v < 1 ? 'neg' : '') : '';
+  function renderOM(){
+    const a = $('om-alert').value, w = $('om-win').value, k = $('om-metric').value;
+    const rows = M.filter(r => r.alert === a && r.window === w);
+    $('om-table').querySelector('thead').innerHTML = '<tr><th>Strike</th><th>Same day</th><th>Next day</th><th>2 days</th></tr>';
+    $('om-table').querySelector('tbody').innerHTML = STR.map(st => '<tr><td>' + NICE[st] + '</td>' + [0, 1, 2].map(d => {
+      const r = rows.find(x => x.strike === st && x.dte === d);
+      if (!r) return '<td class="dim">&ndash;</td>';
+      const tip = `${r.n} trades, win ${r.wr.toFixed(0)}%, avg win +${r.aw.toFixed(0)}% / loss ${r.al.toFixed(0)}%, PF ${r.pf.toFixed(2)}, median ${r.med.toFixed(0)}%, lose half ${r.half.toFixed(0)}%, worthless ${r.zero.toFixed(0)}%`;
+      return `<td class="${ocls(k, r[k])}" title="${tip}">${fmt(k, r[k])}</td>`;
+    }).join('') + '</tr>').join('');
+  }
+  ['om-alert','om-win','om-metric'].forEach(id => $(id).addEventListener('change', renderOM));
+  renderOM();
+
+  /* ---------------- charts ---------------- */
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, c, txt){ const e = document.createElementNS(NS, tag); for (const x in attrs) e.setAttribute(x, attrs[x]); if (c) e.setAttribute('class', c); if (txt !== undefined) e.textContent = txt; return e; }
+  function bars(id, labels, values, o){
+    const svg = $(id); if (!svg) return;
+    const vb = svg.viewBox.baseVal, W = vb.width, H = vb.height, pL = 44, pR = 10, pT = 18, pB = 40, pw = W - pL - pR, ph = H - pT - pB;
+    const n = values.length, slot = pw / n, bw = slot * (o.barFrac || 0.62);
+    const vmin = o.min !== undefined ? o.min : Math.min(0, ...values), vmax = o.max !== undefined ? o.max : Math.max(0, ...values);
+    const y = v => pT + ph * (1 - (v - vmin) / (vmax - vmin)), base = y(Math.max(vmin, Math.min(0, vmax)));
+    (o.grid || []).forEach(g => { svg.appendChild(el('line', {x1:pL, x2:W-pR, y1:y(g), y2:y(g)}, 'grid'));
+      svg.appendChild(el('text', {x:pL-8, y:y(g)+3.5, 'text-anchor':'end'}, 'tick', o.fmt(g))); });
+    svg.appendChild(el('line', {x1:pL, x2:W-pR, y1:base, y2:base}, 'axis'));
+    values.forEach((v, i) => { const cx = pL + i*slot + slot/2, yy = y(v);
+      svg.appendChild(el('rect', {x:cx-bw/2, y:Math.min(yy, base), width:bw, height:Math.max(Math.abs(base-yy),1)}, o.tier(v, i)));
+      svg.appendChild(el('text', {x:cx, y:yy - (v >= 0 ? 6 : -14)}, 'val', o.val(v)));
+      svg.appendChild(el('text', {x:cx, y:H-pB+18}, 'lbl', labels[i])); });
+  }
+  function lines(id, years, series, o){
+    const svg = $(id); if (!svg) return;
+    const vb = svg.viewBox.baseVal, W = vb.width, H = vb.height, pL = 42, pR = 12, pT = 14, pB = 28, pw = W - pL - pR, ph = H - pT - pB;
+    const cum = series.map(s => { let t = 0; return s.v.map(v => (t += v)); });
+    const all = cum.flat(); let vmin = Math.min(0, ...all), vmax = Math.max(...all);
+    const step = o.step; vmin = Math.floor(vmin / step) * step; vmax = Math.ceil(vmax / step) * step;
+    const x = i => pL + pw * i / (years.length - 1), y = v => pT + ph * (1 - (v - vmin) / (vmax - vmin));
+    for (let g = vmin; g <= vmax + 1e-9; g += step) {
+      svg.appendChild(el('line', {x1:pL, x2:W-pR, y1:y(g), y2:y(g)}, g === 0 ? 'axis' : 'grid'));
+      svg.appendChild(el('text', {x:pL-6, y:y(g)+3.5, 'text-anchor':'end'}, 'tick', o.fmt(g)));
+    }
+    years.forEach((yr, i) => { if (yr % 5 === 0) svg.appendChild(el('text', {x:x(i), y:H-8, 'text-anchor':'middle'}, 'tick', String(yr))); });
+    cum.forEach((c, k) => {
+      const d = c.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
+      svg.appendChild(el('path', {d}, series[k].cls));
+    });
+  }
+  try {
+    const D = {"years": [1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026], "tb": [-1.027, -5.099, 22.939, 6.569, 2.39, 6.826, -3.112, -6.031, -2.594, -3.428, 6.908, -1.013, 2.342, 9.886, 2.983, -0.561, 11.854, 13.22, -8.33, 9.823, 18.305, 1.883, -3.574, 6.026, 17.248, -2.872, 12.927, 10.418, 1.8, -5.283, 15.485, 4.22, 1.958, 9.002], "ob": [0.03, 0.111, -0.194, -1.145, 1.223, 1.698, 2.821, 0.018, 3.022, 3.841, 5.095, 0.563, 0.743, -0.366, 2.58, 3.284, 3.167, 6.265, 5.848, 3.778, 1.426, 1.749, 0.314, 1.775, 0.193, 1.414, 4.424, 8.392, 6.226, 1.31, 2.314, 4.194, 6.434, -0.226], "ob_base": [0.039, 0.086, -0.042, 0.29, 0.463, 0.716, 1.882, -1.022, 1.117, 0.493, 1.24, 0.283, -0.385, -0.01, 0.103, 0.67, 3.553, 3.135, 1.821, 0.312, 0.573, 0.222, -0.39, -0.052, 0.427, -0.014, 0.474, 3.004, 4.172, 0.339, 0.233, 1.378, 2.721, 2.161], "bnB": [0.0, 0.0, 0.0, 0.0, 0.0, 0.217, 3.558, 16.269, 3.44, 9.526, 0.36, 0.0, 0.0, 0.0, -0.485, 28.194, 13.642, 13.134, 7.352, 0.0, 0.0, 0.0, 11.307, 6.196, 0.0, -2.682, 0.0, 37.973, 8.099, 17.462, 0.0, 1.171, 21.232, 5.173], "bnD": [0.0, 0.391, 0.611, 1.771, 5.907, 1.976, 1.501, 20.052, 11.672, 0.563, 2.879, 3.728, 3.224, -5.816, 5.09, 21.053, 8.558, 4.067, 0.104, 1.196, 0.643, 1.819, 4.478, -2.813, 0.229, 10.666, -1.716, 4.851, 2.828, 12.719, 6.222, 0.238, 2.834, 1.145]};
+    lines('ch-tb', D.years, [{v:D.tb, cls:'l1'}], {step:40, fmt:v => v + 'R'});
+    lines('ch-ob', D.years, [{v:D.ob_base, cls:'l2'}, {v:D.ob, cls:'l1'}], {step:20, fmt:v => v.toFixed(0)});
+    lines('ch-bn', D.years, [{v:D.bnD, cls:'l3'}, {v:D.bnB, cls:'l1'}], {step:50, fmt:v => v + '%'});
+    bars('ch-stop-avg', ['Hold','Midpoint','Strike','2× credit','3× credit','Noon'], [10.4,10.5,6.6,7.7,9.7,7.9],
+         {min:0, max:12, grid:[0,4,8,12], fmt:v => v + '%', val:v => '+' + v.toFixed(1) + '%', tier:(v, i) => i === 1 ? 'b1' : 'b2', barFrac:0.58});
+    bars('ch-stop-full', ['Hold','Midpoint','Strike','2× credit','3× credit','Noon'], [4.6,0,0,0,1.5,0.2],
+         {min:0, max:5, grid:[0,1,2,3,4,5], fmt:v => v + '%', val:v => v.toFixed(1) + '%', tier:(v, i) => i === 1 ? 'b1' : (v >= 1 ? 'bneg' : 'b2'), barFrac:0.58});
+    bars('chart-spy-months', ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+         [0.19,0.39,1.47,1.93,0.61,0.04,2.64,0.18,-0.52,0.88,2.54,0.73],
+         {grid:[-1,0,1,2,3], min:-1, max:3, fmt:v => v + '%', val:v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%', tier:v => v >= 1.5 ? 'bpos' : (v < 0 ? 'bneg' : 'b2')});
+    bars('chart-calendar', ['Fed eve, soft','After selloff','Fed eve','2 nights pre-Fed','1st of month'], [1.25,0.81,0.97,0.66,0.64],
+         {min:0, max:1.4, grid:[0,0.5,1.0], fmt:v => v.toFixed(1), val:v => v.toFixed(2), tier:() => 'b1', barFrac:0.5});
+    const rowsH = [["Jan",-0.5,1.3,-0.3,-0.1,0.3,-0.6,0.1,0.6,0.7,1.0,2.4,0.6,-0.9,2.0,1.2],["Feb",1.3,1.3,-0.3,1.0,1.0,0.0,-1.2,-0.3,0.5,3.2,0.5,1.1,0.5,0.6,1.1],
+      ["Mar",1.8,0.8,0.4,1.6,2.2,2.1,2.6,1.2,1.5,1.7,-0.7,1.8,-1.7,0.9,1.7],["Apr",2.4,4.3,2.7,1.7,1.5,1.4,2.1,1.2,2.4,1.0,0.1,7.1,1.1,2.8,1.2],
+      ["May",0.0,-0.0,-0.1,0.2,1.8,0.1,0.5,0.8,-0.0,3.2,1.8,0.1,-1.3,0.9,1.7],["Jun",-0.9,0.4,-1.3,-0.8,0.3,0.0,0.3,0.8,0.1,-0.3,3.4,-0.6,-1.4,-0.5,0.8],
+      ["Jul",2.4,0.8,2.8,2.5,3.3,2.4,2.2,2.5,3.1,3.2,3.4,-1.1,3.7,1.2,2.4],["Aug",-0.6,-1.4,0.0,-0.1,0.9,0.4,0.3,0.3,0.3,-0.3,-0.3,-1.3,-1.0,-0.2,1.6],
+      ["Sep",-1.2,-0.4,-0.6,-0.0,-0.6,-0.1,-0.5,-0.4,0.0,-0.5,-1.0,-1.3,0.3,-2.7,-0.2],["Oct",1.1,1.3,1.4,0.8,1.4,0.9,1.3,0.2,0.4,-0.3,-1.8,1.2,2.2,-1.2,1.4],
+      ["Nov",3.1,2.3,2.5,3.8,2.5,2.0,0.8,2.3,3.0,4.2,4.5,1.4,4.0,1.8,2.0],["Dec",0.7,-0.1,0.9,0.6,0.7,0.8,1.0,1.1,0.5,1.5,0.5,-1.2,1.6,1.2,0.0]];
+    const sectors = ['XLB','XLE','XLF','XLI','XLK','XLP','XLU','XLV','XLY','SMH','XBI','XOP','KRE','GDX','IGV'];
+    const hc = v => v >= 2 ? 'hm-p2' : v >= 0.5 ? 'hm-p1' : v > -0.5 ? 'hm-n' : v > -2 ? 'hm-m1' : 'hm-m2';
+    $('sector-heatmap-body').innerHTML = '<tr><th>Month</th>' + sectors.map(x => '<th>' + x + '</th>').join('') + '</tr>' +
+      rowsH.map(r => '<tr><td>' + r[0] + '</td>' + r.slice(1).map(v => '<td class="' + hc(v) + '">' + (v >= 0 ? '+' : '') + v.toFixed(1) + '</td>').join('') + '</tr>').join('');
+  } catch (e) {}
+})();
+</script>
+
+</body>
+</html>
