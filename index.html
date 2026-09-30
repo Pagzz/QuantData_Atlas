@@ -6,6 +6,13 @@
 <title>Signal Atlas · Richard Pagano</title>
 <meta name="author" content="Richard Pagano">
 <meta name="description" content="Short- and longer-term trading research on U.S. index and sector ETFs, expressed through defined-risk option spreads. By Richard Pagano.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d5b8f'/%3E%3Cpath d='M12 45 L24 32 L33 38 L50 17' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='17' r='5.5' fill='%23f2c14e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#1d5b8f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Signal Atlas · Richard Pagano">
+<meta property="og:description" content="Short- and longer-term trading ideas for U.S. index and sector ETFs, expressed through defined-risk option spreads and tested on 33 years of data.">
+<meta property="og:url" content="https://pagzz.github.io/QuantData_Atlas/">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -147,6 +154,19 @@
   dl.gloss dt{font-weight:600;} dl.gloss dd{margin:0;color:var(--ink-2);}
   @media (max-width:560px){ dl.gloss{grid-template-columns:1fr;} dl.gloss dd{margin-bottom:6px;} }
   ul.plain{padding-left:18px;margin:0;max-width:78ch;} ul.plain li{margin:6px 0;color:var(--ink-2);font-size:14px;} ul.plain b{color:var(--ink);}
+  .mast{position:relative;}
+  .theme-btn{position:absolute;top:36px;right:0;font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);
+             background:var(--surface);border:1px solid var(--line);padding:6px 10px;cursor:pointer;}
+  .theme-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;background:var(--surface);border:1px solid var(--line);
+       border-left:3px solid #5865f2;padding:16px 18px;margin-top:22px;}
+  .cta p{margin:0;font-size:14px;color:var(--ink-2);max-width:60ch;} .cta p b{color:var(--ink);}
+  .cta a{font:600 14px 'IBM Plex Sans',sans-serif;color:#fff;background:#5865f2;padding:9px 16px;text-decoration:none;white-space:nowrap;}
+  .cta a:hover{background:#4752c4;}
+  svg path.l1, svg path.l3{stroke-dasharray:1;stroke-dashoffset:0;animation:draw 1.6s ease-out both;}
+  @keyframes draw{from{stroke-dashoffset:1;}to{stroke-dashoffset:0;}}
+  @media (prefers-reduced-motion: reduce){ svg path.l1, svg path.l3{animation:none;} }
+  @media (max-width:560px){ .theme-btn{position:static;margin-bottom:10px;} }
   footer{padding-block:26px 44px;color:var(--ink-3);font-size:12.5px;}
   footer p{max-width:80ch;}
 </style>
@@ -154,9 +174,10 @@
 <body>
 <div class="wrap">
 <header class="mast">
+  <button type="button" class="theme-btn" id="theme-btn" aria-label="Switch light or dark theme">Dark mode</button>
   <div class="kicker"><span><b>Independent research</b></span><span>U.S. index &amp; sector ETFs</span><span>Data 1993&ndash;2026</span><span>Updated 30 Sep 2026</span></div>
   <h1>Signal Atlas</h1>
-  <p class="byline">By <b>Richard Pagano</b> &middot; <a href="https://github.com/Pagzz">github.com/Pagzz</a></p>
+  <p class="byline">By <b>Richard Pagano</b> &middot; <a href="https://github.com/Pagzz">github.com/Pagzz</a> &middot; <a href="https://discord.gg/4EmkXHhPK">Live signals on Discord</a></p>
   <p class="standfirst">Short- and longer-term trading ideas for U.S. index and sector ETFs, expressed mainly through defined-risk option spreads. Each idea is a fixed
   rule, tested on point-in-time data, validated out of sample and compared with the same trade on random days.</p>
   <div class="figures">
@@ -500,6 +521,8 @@
   developing trading research, from hand-built indicators to the automated, tested system described here. He designed and built all of it: the methodology, the
   data pipeline, the validation framework, the option-pricing model and the production service. Each signal is a fixed rule, each input is documented and each change is
   logged, the same way an index methodology is maintained.</p>
+  <div class="cta"><p><b>See the signals live.</b> Every alert and spread in this report posts in real time, with its entry, stop and exit, to an open Discord community.</p>
+    <a href="https://discord.gg/4EmkXHhPK" target="_blank" rel="noopener">Join on Discord</a></div>
 </section>
 
 <footer>
@@ -511,6 +534,17 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
+
+  /* ---------------- theme toggle ---------------- */
+  const root = document.documentElement, btn = $('theme-btn');
+  const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const label = () => { btn.textContent = isDark() ? 'Light mode' : 'Dark mode'; };
+  try { const t = localStorage.getItem('atlas-theme'); if (t) root.dataset.theme = t; } catch (e) {}
+  label();
+  btn.addEventListener('click', () => {
+    root.dataset.theme = isDark() ? 'light' : 'dark'; label();
+    try { localStorage.setItem('atlas-theme', root.dataset.theme); } catch (e) {}
+  });
 
   /* ---------------- strategy book ---------------- */
   const G = {
@@ -649,7 +683,7 @@
     years.forEach((yr, i) => { if (yr % 5 === 0) svg.appendChild(el('text', {x:x(i), y:H-8, 'text-anchor':'middle'}, 'tick', String(yr))); });
     cum.forEach((c, k) => {
       const d = c.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
-      svg.appendChild(el('path', {d}, series[k].cls));
+      svg.appendChild(el('path', {d, pathLength: 1}, series[k].cls));
     });
   }
   try {
